@@ -1,6 +1,6 @@
 # ResumeCraft
 
-<img src="path/to/your/logo.png" alt="Logo" width="200"/>
+<img src="/src/assets/resumeCraftlogo.png" alt="Logo" width="200"/>
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/ValiantDoge/ResumeCraft)](https://github.com/ValiantDoge/ResumeCraft/issues)

@@ -17,3 +17,83 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.dcard{
+  perspective: 800px;
+}
+
+.card {
+  transform-style: preserve-3d;
+	transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.trigger {
+	position: absolute;
+	height: 33.333333%;
+	width: 33.333333%;
+	display: block;
+	z-index: 2;
+
+	&:nth-child(1) {
+		left: 0%;
+		top: 0%;
+		&:hover ~ .card {
+			transform: rotateY(8deg) rotateX(-5deg);
+		}
+	}
+	&:nth-child(2) {
+		left: 33.333333%;
+		top: 0%;
+		&:hover ~ .card {
+			transform: rotateY(0deg) rotateX(-5deg);
+		}
+	}
+	&:nth-child(3) {
+		left: 66.666666%;
+		top: 0%;
+		&:hover ~ .card {
+			transform: rotateY(-8deg) rotateX(-5deg);
+		}
+	}
+	&:nth-child(4) {
+		left: 0%;
+		top: 33.333333%;
+		&:hover ~ .card {
+			transform: rotateY(8deg);
+		}
+	}
+	&:nth-child(5) {
+		left: 33.333333%;
+		top: 33.333333%;
+		&:hover ~ .card {
+			transform: rotateY(0deg) rotateX(0deg);
+		}
+	}
+	&:nth-child(6) {
+		left: 66.666666%;
+		top: 33.333333%;
+		&:hover ~ .card {
+			transform: rotateY(-8deg) rotateX(0deg);
+		}
+	}
+	&:nth-child(7) {
+		left: 0%;
+		top: 66.666666%;
+		&:hover ~ .card {
+			transform: rotateY(8deg) rotateX(5deg);
+		}
+	}
+	&:nth-child(8) {
+		left: 33.333333%;
+		top: 66.666666%;
+		&:hover ~ .card {
+			transform: rotateY(0deg) rotateX(5deg);
+		}
+	}
+	&:nth-child(9) {
+		left: 66.666666%;
+		top: 66.666666%;
+		&:hover ~ .card {
+			transform: rotateY(-8deg) rotateX(5deg);
+		}
+	}
+}

@@ -1,6 +1,6 @@
 # ResumeCraft
 
-![Logo](resumecraft/src/assets/resumeCraftlogo.png)
+![Logo](/src/assets/resumeCraftlogo.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/ValiantDoge/ResumeCraft)](https://github.com/ValiantDoge/ResumeCraft/issues)
@@ -21,5 +21,5 @@ ResumeCraft is a modern web application designed to simplify the process of crea
 
 ## Screenshots
 
-![Screenshot 1](resumecraft/src/assets/resumeCraftlogo_full.jpeg)
-![Screenshot 2](resumecraft/src/assets/resumeCraftlogo_full.jpeg)
+![Screenshot 1](/src/assets/resumeCraftlogo_full.jpeg)
+![Screenshot 2](/src/assets/resumeCraftlogo_full.jpeg)

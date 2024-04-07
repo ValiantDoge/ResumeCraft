@@ -10,7 +10,7 @@ function App() {
       <BrowserRouter>
           <Routes>
             <Route index element={<Home />} />
-            <Route path="/resumeform" element={<ResumeForm />} />
+            <Route path="/resumeform/:tempId" element={<ResumeForm />} />
             <Route path='*' element={<Error404/>}></Route>
           </Routes>
       </BrowserRouter>

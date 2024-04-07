@@ -4,7 +4,7 @@ export default function TempSelect() {
       <div className="container px-5 py-5 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
           <div className="w-auto sm:mb-0 mb-6 rounded-md">
-            <Link to="/resumeform" className="dcard group relative rounded-lg">
+            <Link to="/resumeform/1" className="dcard group relative rounded-lg">
 
                 <div className="trigger"></div>
                 <div className="trigger"></div>
@@ -55,7 +55,7 @@ export default function TempSelect() {
 
 
           <div className="w-auto sm:mb-0 mb-6 rounded-md">
-            <div className="dcard group relative rounded-lg">
+            <Link to='resumeform/2' className="dcard group relative rounded-lg">
 
                 <div className="trigger"></div>
                 <div className="trigger"></div>
@@ -71,7 +71,7 @@ export default function TempSelect() {
                     <img
                     alt="template2"
                     className="rounded-md shadow-lg object-fit md:object-contain h-full w-full"
-                    src={"/resTemplates/template2.jpg"}
+                    src={"/resTemplates/template2.png"}
                 />
 
                 <div className="hidden group-hover:flex absolute left-0 right-0 bottom-0 top-0 m-auto justify-center items-center">
@@ -81,14 +81,14 @@ export default function TempSelect() {
                     <div className="absolute rounded-xl h-14 w-52 bg-opacity-70 bg-gray-500 ml-4 mt-2"></div>
                 </div>
                </div>
-            </div>
+            </Link>
             <h2 className="text-xl font-medium title-font text-gray-900 mt-5">
             The Pragmatic Engineer's Resume Template
             </h2>
             <p className="text-base leading-relaxed mt-2">
             Suitable for students seeking part-time jobs, internships, or entry-level positions.
             </p>
-            <a className="text-indigo-500 inline-flex items-center mt-3">
+            <Link to="resumeform/2" className="text-indigo-500 inline-flex items-center mt-3">
               Craft Resume
               <svg
                 fill="none"
@@ -101,7 +101,7 @@ export default function TempSelect() {
               >
                 <path d="M5 12h14M12 5l7 7-7 7"></path>
               </svg>
-            </a>
+            </Link>
           </div>
           
         </div>

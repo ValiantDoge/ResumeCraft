@@ -37,8 +37,8 @@ export default function Form(){
     }
 
     return (
-      <section className="userForm">
-        <form className="max-w-md mx-auto">
+      <section className="userForm flex justify-start items-center w-full ">
+        <form className="bg-slate-100 p-6 rounded-md">
         <h2 className="text-2xl font-mono mb-6">User Form</h2>
         <div className="grid md:grid-cols-2 md:gap-6">
             <div className="relative z-0 w-full mb-5 group">
@@ -78,6 +78,7 @@ export default function Form(){
               </label>
             </div>
           </div>
+
           <div className="relative z-0 w-full mb-5 group">
             <input
               onChange={(e)=>{setDetail({...personalDetails, email:e.target.value})}}
@@ -98,7 +99,7 @@ export default function Form(){
           </div>
 
           
-          <div className="grid md:grid-cols-2 md:gap-6">
+          
             <div className="relative z-0 w-full mb-5 group">
               <input
                 onChange={(e)=>{setDetail({...personalDetails, contactNo:e.target.value})}}
@@ -133,7 +134,7 @@ export default function Form(){
                 Company (Ex. Google)
               </label>
             </div> */}
-          </div>
+         
           <button
             onClick={(e)=>sendData(e)}
             type="submit"

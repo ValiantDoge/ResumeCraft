@@ -1,10 +1,39 @@
+import axios from "axios";
 import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
 
-export default function(){
+export default function Form(){
     const [personalDetails, setDetail] = useState({fname:"", lname:"", email:"", contactNo:""});
-    function handleSubmit(e) {
-        e.preventDefault();
-        console.log(personalDetails);
+    // const navigateTo = useNavigate();
+
+    const sendData = async(e) => {
+      e.preventDefault();
+      let formField = new FormData();
+      formField.append("fname", personalDetails.fname);
+      formField.append("lname", personalDetails.lname);
+      formField.append("email", personalDetails.email);
+      formField.append("contactNo", personalDetails.contactNo);
+      
+      console.log(formField.get("fname"));
+
+      await axios({
+        method:'POST', 
+        url: 'http://localhost:8000/create-resume/',
+        data: formField,
+      }).then((response) => {
+        // console.log(response.data);
+        // navigateTo('/');
+        //download file here
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'resume.pdf');
+        document.body.appendChild(link);
+        link.click();
+      })
+
+
+
     }
 
     return (
@@ -106,7 +135,7 @@ export default function(){
             </div> */}
           </div>
           <button
-            onClick={(e)=>handleSubmit(e)}
+            onClick={(e)=>sendData(e)}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >

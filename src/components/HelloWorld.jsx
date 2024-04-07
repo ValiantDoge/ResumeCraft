@@ -5,7 +5,7 @@ function HelloWorld() {
   const [msg, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:8000/hello-world/')
+    axios.get('http://localhost:8000/create-resume/')
       .then(response => {
         setMessage(response.data.message);
       })

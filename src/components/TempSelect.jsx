@@ -67,10 +67,10 @@ export default function TempSelect() {
                 <div className="trigger"></div>
                 <div className="trigger"></div>
                 
-               <div className="card">
+               <div className="card shadow-lg">
                     <img
                     alt="template2"
-                    className="rounded-md shadow-lg object-fit md:object-contain h-full w-full"
+                    className="frame rounded-md shadow-lg object-fit md:object-contain h-full w-full"
                     src={"/resTemplates/template2.png"}
                 />
 

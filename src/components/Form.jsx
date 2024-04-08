@@ -1,18 +1,83 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useParams } from 'react-router-dom';
 // import { useNavigate } from "react-router-dom";
 
 export default function Form(){
-    const [personalDetails, setDetail] = useState({fname:"", lname:"", email:"", contactNo:""});
+    const { tempId } = useParams();
+    const [personalDetails, setDetail] = useState({fname:"", lname:"", email:"", contactNo:"", usrImg: null});
+    const inputImgRef = useRef(null);
+    const [usrImg, setUsrImg] = useState(null);
+
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      const imgname = e.target.files[0].name;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onloadend = () => {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxSize = Math.max(img.width, img.height);
+          canvas.width = maxSize;
+          canvas.height = maxSize;
+          const ctx = canvas.getContext("2d");
+
+          //Set Canvas to Transparant
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          ctx.beginPath();
+          ctx.arc(maxSize / 2, maxSize / 2, maxSize / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+
+          ctx.drawImage(
+              img,
+              0, 0, maxSize, maxSize
+            );
+
+          canvas.toBlob(
+            (blob) => {
+              const file = new File([blob], imgname, {
+                type: "image/png",
+                lastModified: Date.now(),
+              });
+  
+              // console.log(file);
+              setUsrImg(file);
+
+              // const downloadLink = document.createElement("a");
+              // downloadLink.href = URL.createObjectURL(file);
+              // downloadLink.download = imgname;
+              // downloadLink.click();
+            },
+            "image/png",
+            0.8
+          );
+        };
+      };
+      document.getElementById("uploadUserImg").classList.add('rounded-full');
+
+    }
+
+    const handleuploadImage = () => {
+      inputImgRef.current.click();
+    }
     // const navigateTo = useNavigate();
 
     const sendData = async(e) => {
       e.preventDefault();
       let formField = new FormData();
+      formField.append("tempId", tempId);
       formField.append("fname", personalDetails.fname);
       formField.append("lname", personalDetails.lname);
       formField.append("email", personalDetails.email);
       formField.append("contactNo", personalDetails.contactNo);
+      if (Image !== null) {
+        formField.append("userPicture", usrImg)
+      }
       
       console.log(formField.get("fname"));
 
@@ -37,10 +102,23 @@ export default function Form(){
     }
 
     return (
-      <section className="userForm flex justify-start items-center w-full ">
-        <form className="bg-slate-100 p-6 rounded-md">
+      <section className="userForm flex justify-center lg:justify-start items-center w-full ">
+        <form className="bg-slate-100 p-6 px-32 rounded-md">
         <h2 className="text-2xl font-mono mb-6">User Form</h2>
         <div className="grid md:grid-cols-2 md:gap-6">
+
+            <div onClick={handleuploadImage} className="col-span-2 flex flex-col justify-center items-center">
+                <p className="font-serif text-xl">Upload Image</p>
+                
+
+                {usrImg ? (
+                  <img src={URL.createObjectURL(usrImg)} alt="uploadImg" id="uploadUserImg" className="w-44 h-44 p-5" />
+                ) : (
+                  <img src="/uploadImg.png" alt="uploadImg" id="uploadUserImg" className="w-44 h-44 p-5" />
+                )}
+                <input type="file" name="userPicture" onChange={ handleImageChange } className="hidden" id="img"  ref={inputImgRef}/>
+            </div>
+
             <div className="relative z-0 w-full mb-5 group">
               <input
                 onChange={(e) => {setDetail({...personalDetails, fname: e.target.value })}}

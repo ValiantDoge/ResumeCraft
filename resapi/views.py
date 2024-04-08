@@ -8,9 +8,11 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.utils import ImageReader
 from reportlab.graphics.shapes import *
+from PIL import Image as PImage
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 
 # Create your views here.
 
@@ -22,12 +24,16 @@ registerFont(TTFont('Lato-BoldItalic', os.path.join(settings.BASE_DIR, 'public',
 @api_view(['GET', 'POST'])
 def createResume(request):
     if request.method == 'POST':
+        tempId = str(request.POST.get("tempId"))
         fname = str(request.POST.get("fname"))
         lname = str(request.POST.get("lname"))
         email = str(request.POST.get("email"))
         contactNo = str(request.POST.get("contactNo") )
+        uploaded_image = request.FILES.get('userPicture')
 
-        info = [fname, lname, email, contactNo]
+        print(tempId)
+
+        # info = [fname, lname, email, contactNo]
 
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
@@ -51,15 +57,28 @@ def createResume(request):
         circle_drawing.add(circle)
         circle_drawing.drawOn(c, 80, 80)
 
-        image_path = os.path.join(settings.BASE_DIR, 'public', 'fav.png')
-        c.drawImage(image_path, 45, 45, width=170, height=170, mask='auto')
+        if uploaded_image:
+            image_path = os.path.join(settings.MEDIA_ROOT, uploaded_image.name)
+            if not os.path.exists(os.path.dirname(image_path)):
+                os.makedirs(os.path.dirname(image_path))
+            
+            with open(image_path, 'wb') as destination:
+                for chunk in uploaded_image.chunks():
+                    destination.write(chunk)
+
+            with PImage.open(image_path) as img:
+                img = img.transpose(PImage.FLIP_TOP_BOTTOM)
+                img.save(image_path, format='PNG')
+
+            c.drawImage(image_path, 45, 45, width=170, height=170, mask='auto')
         
-
-
-
         # c.showPage()
         
         c.save()
+        if uploaded_image:
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
         buf.seek(0)
         return FileResponse(buf, as_attachment=True, filename='resume.pdf')
 

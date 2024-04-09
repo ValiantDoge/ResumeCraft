@@ -88,6 +88,8 @@ export default function Form(){
       }).then((response) => {
         // console.log(response.data);
         // navigateTo('/');
+
+        
         //download file here
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');

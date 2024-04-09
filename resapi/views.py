@@ -12,6 +12,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import Paragraph
 
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -37,6 +38,7 @@ def createResume(request):
         #Creating the Canvas
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+        style = getSampleStyleSheet()
         canvas_width, canvas_height = letter
         #Draw the style rectangles
         d = Drawing(300, canvas_height)
@@ -73,25 +75,15 @@ def createResume(request):
         
         # c.showPage()
 
-        #Draw the text
-       
+        #Draw the Header text
         c.setFont('LatoBold', 24)
         c.drawString(250, 130, fname.upper())
         c.drawString(250, 154, lname.upper())
         c.setFont('LoraItalic', 16)
-        # c.drawString(250, 174, "Student f")
-
-        style = getSampleStyleSheet()
-        width, height = letter
-        text = """<font name="LoraItalic" size="16">Student</font>"""
-        p = Paragraph(text, style=style["Normal"])
-        p.wrapOn(c, width, height)
+        profession = """<font name="LoraItalic" size="16">Student</font>"""
+        p = Paragraph(profession, style=style["Normal"])
+        p.wrapOn(c, canvas_width, canvas_height)
         p.drawOn(c, 250, 174, mm)
-
-        
-
-        
-        
 
         c.save()
         if uploaded_image:

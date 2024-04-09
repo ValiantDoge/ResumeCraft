@@ -85,6 +85,7 @@ export default function Form(){
         method:'POST', 
         url: 'http://localhost:8000/create-resume/',
         data: formField,
+        responseType: 'blob'
       }).then((response) => {
         // console.log(response.data);
         // navigateTo('/');

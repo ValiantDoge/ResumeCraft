@@ -10,7 +10,7 @@ export default function Header() {
         </nav>
         <a className="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-gray-900 lg:items-center lg:justify-center mb-4 md:mb-0">
             <img src={resumeCraftLogo} className='w-14 h-14 text-white rounded-full' alt="resumeCraftLogo" />
-            <span className="ml-3 text-xl">ResumeCraft</span>
+            <p className="ml-3 text-xl">ResumeCraft</p>
         </a>
         <div className="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
             <button className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Button

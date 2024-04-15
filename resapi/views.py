@@ -23,13 +23,14 @@ registerFont(TTFont('LatoBold', os.path.join(settings.BASE_DIR, 'public', 'fonts
 registerFont(TTFont('LatoBlack', os.path.join(settings.BASE_DIR, 'public', 'fonts', 'Lato', 'Lato-Black.ttf') ))
 
 registerFont(TTFont('Lora',  os.path.join(settings.BASE_DIR, 'public','fonts', 'Lora','Lora-Regular.ttf') ))
+registerFont(TTFont('LoraBold',  os.path.join(settings.BASE_DIR, 'public','fonts', 'Lora','Lora-Bold.ttf') ))
 registerFont(TTFont('LoraItalic',  os.path.join(settings.BASE_DIR, 'public','fonts', 'Lora','Lora-Italic.ttf') ))
 
 registerFont(TTFont('FontAwesome', os.path.join(settings.BASE_DIR, 'public','fonts', 'FontAwesome.ttf')))
 registerFontFamily('Icon', normal='FontAwesome')
 
 
-registerFontFamily('Lora', normal='Lora', bold='LoraItalic')
+registerFontFamily('Lora', normal='Lora', bold='LoraBold', italic='LoraItalic')
 registerFontFamily('Lato', normal='Lato', bold='LatoBlack')
 style = getSampleStyleSheet()
 style.add(ParagraphStyle(name='Content',
@@ -46,6 +47,7 @@ style.add(ParagraphStyle(name='IconHere',
 
 style.add(ParagraphStyle(name='SectionTitle',
                          fontFamily='Lato',
+                         leading=30,
 
                           ))
 
@@ -119,8 +121,12 @@ def createResume(request):
             [Paragraph("""<font name="FontAwesome" color="white" size="20">\uf0e0&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;{email}</font>""", style=style["Content"])],
             [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;125 Anywhere, Any City, State, Country 405475</font>""", style=style["Content"])]
         ]
+        email_rHeight = 40
+        print(len(email))
+        if len(email) > 19:
+            email_rHeight = 60
         
-        cont_table = Table(contact_data, rowHeights=[40, 40, 60], colWidths=[35, 150])
+        cont_table = Table(contact_data, rowHeights=[40, email_rHeight, 60], colWidths=[35, 150])
         cont_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), "LEFT"),
             ('VALIGN',(0,0),(-1, -1),'TOP')])
@@ -141,6 +147,22 @@ def createResume(request):
         )
         profile.wrapOn(c, 180, 200)
         profile.drawOn(c, 50, 50)
+
+        #Draw Main Page
+        edData = [
+            [Paragraph("""<font name="FontAwesome" size="20">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="16">EDUCATION</font>""", style=style["SectionTitle"])],
+            [Paragraph("""<font name="LoraBold" size="14">MILEMORA UNIVERSITY</font>""", style=style["Content"])],
+            [Paragraph("""<font name="Lora" size="14">Business Administration career, in progress.</font>""", style=style["Content"])],
+            
+        ]
+
+        mainTable = Table(edData, colWidths=canvas_width-300)
+        mainTable.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), "LEFT"),
+            ('VALIGN',(0,0),(-1, -1),'TOP')])
+        )
+        mainTable.wrapOn(c, canvas_width, canvas_height-10)
+        mainTable.drawOn(c, 255, 400)
 
         
 

@@ -10,7 +10,7 @@ export default function ResumeForm(){
             <Header />
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div className="p-10 flex justify-center">
-                    <img src={ imgUrl } className="w-1/2 bg-slate-200 p-3 rounded-md" alt="resumeTemplate" />
+                    <img src={ imgUrl } className="w-3/4 h-3/4 bg-slate-200 p-3 rounded-md" alt="resumeTemplate" />
                 </div>
 
                 <Form />

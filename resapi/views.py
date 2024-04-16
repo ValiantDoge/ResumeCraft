@@ -15,6 +15,7 @@ from reportlab.platypus import Paragraph, Table, TableStyle
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import json
 
 # Create your views here.
 
@@ -60,7 +61,11 @@ def createResume(request):
         lname = str(request.POST.get("lname"))
         email = str(request.POST.get("email"))
         contactNo = str(request.POST.get("contactNo") )
+        profile_txt = str(request.POST.get("profile"))
         uploaded_image = request.FILES.get('userPicture')
+        eduData =  json.loads(request.POST.get("education"))
+        skillData =  json.loads(request.POST.get("skills"))
+
 
         # info = [fname, lname, email, contactNo]
 
@@ -71,7 +76,7 @@ def createResume(request):
         canvas_width, canvas_height = A4
         #Draw the style rectangles
         d = Drawing(300, canvas_height)
-        d.add(Rect(0, 590, canvas_width, 200, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
+        d.add(Rect(0, 610, canvas_width, 200, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
         d.add(Rect(30, 0, 210, canvas_height, fillColor=colors.HexColor('#6B9999'), strokeColor=None))
         d.drawOn(c, 0, 0)
 
@@ -80,7 +85,7 @@ def createResume(request):
         circle_drawing = Drawing(width=100, height=100)
         circle = Circle(55, 50, 90, strokeColor=None, fillColor=colors.white)
         circle_drawing.add(circle)
-        circle_drawing.drawOn(c, 80, 650)
+        circle_drawing.drawOn(c, 80, 670)
 
         #Get the image from the POST response and Place it over the circle
         if uploaded_image:
@@ -100,19 +105,19 @@ def createResume(request):
             #     img.save(image_path, format='PNG')
 
             #Place it over the circle
-            c.drawImage(image_path, 48.5, 613.5, width=173, height=173, mask='auto')
+            c.drawImage(image_path, 48.5, 633.5, width=173, height=173, mask='auto')
         
         # c.showPage()
 
         #Draw the Header text
         c.setFont('LatoBold', 28)
-        c.drawString(270, 700, fname.upper())
-        c.drawString(270, 670, lname.upper())
+        c.drawString(270, 720, fname.upper())
+        c.drawString(270, 690, lname.upper())
         c.setFont('LoraItalic', 14)
         profession_txt = """<font name="LoraItalic" size="16">Student</font>"""
         profession = Paragraph(profession_txt, style=style["Normal"])
         profession.wrapOn(c, canvas_width, canvas_height)
-        profession.drawOn(c, 270, 650, mm)
+        profession.drawOn(c, 270, 670, mm)
 
         #Draw Profile Section
         
@@ -133,7 +138,7 @@ def createResume(request):
         )
         profile_data = [
             [Paragraph("""<font name="LatoBold" size="16" color="white">PROFILE</font>""", style=style["SectionTitle"])], 
-            [Paragraph("""<font name="Lora" color="white" size="14">Business Administration student.<br/> I consider my self a responsible and orderly person.<br/> I am looking foward for my first work experience.</font>""", style=style["Content"])],
+            [Paragraph(f"""<font name="Lora" color="white" size="14">{profile_txt}</font>""", style=style["Content"])], #max length 235
             [Paragraph("""<font name="LatoBold" size="16" color="white">CONTACT ME</font>""", style=style["SectionTitle"])], 
             [cont_table],
             ]
@@ -146,23 +151,46 @@ def createResume(request):
         ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
         profile.wrapOn(c, 180, 200)
-        profile.drawOn(c, 50, 50)
+        profile.drawOn(c, 50, 80)
 
         #Draw Main Page
-        edData = [
+
+        #Education Section
+        ed_txt = [
             [Paragraph("""<font name="FontAwesome" size="20">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="16">EDUCATION</font>""", style=style["SectionTitle"])],
-            [Paragraph("""<font name="LoraBold" size="14">MILEMORA UNIVERSITY</font>""", style=style["Content"])],
-            [Paragraph("""<font name="Lora" size="14">Business Administration career, in progress.</font>""", style=style["Content"])],
-            
+        ]
+        for clg in eduData:
+            ed_txt.append(
+               [Paragraph(f"""<font name="LoraBold" size="14">{clg["uniName"]}</font>""", style=style["Content"])],
+               
+            )
+            ed_txt.append(
+                [Paragraph(f"""<font name="Lora" size="14">{clg["eddesc"]}</font>""", style=style["Content"])],
+            )
+
+        skill_txt = [
+            [Paragraph("""<font name="FontAwesome" size="20">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="16">SKILLS</font>""", style=style["SectionTitle"])],
+        ]
+        for skill in skillData:
+            skill_txt.append(
+               [Paragraph(f"""<font name="LoraBold" size="14">{skill["skill"]}</font>""", style=style["Content"])],
+               
+            )
+            skill_txt.append(
+                [Paragraph(f"""<font name="Lora" size="14">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
+            )
+        edTable = Table(ed_txt, colWidths=[canvas_width-300])
+        skillTable = Table(skill_txt, colWidths=[canvas_width-300])
+
+        
+        contentData = [
+            [edTable],
+            [skillTable],
         ]
 
-        mainTable = Table(edData, colWidths=canvas_width-300)
-        mainTable.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), "LEFT"),
-            ('VALIGN',(0,0),(-1, -1),'TOP')])
-        )
+        mainTable = Table(contentData, colWidths=canvas_width-300)
         mainTable.wrapOn(c, canvas_width, canvas_height-10)
-        mainTable.drawOn(c, 255, 400)
+        mainTable.drawOn(c, 255, 290)
 
         
 

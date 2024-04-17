@@ -10,7 +10,7 @@ from reportlab.graphics.shapes import *
 from PIL import Image as PImage
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm,inch
-from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Frame
 
 
 from rest_framework.decorators import api_view
@@ -68,19 +68,22 @@ def createResume(request):
 
 
         # info = [fname, lname, email, contactNo]
-
+        canvas_width, canvas_height = A4
         #Creating the Canvas
         buf = io.BytesIO()
-        c = canvas.Canvas(buf, pagesize=A4)
+
         
-        canvas_width, canvas_height = A4
+       
+        c = canvas.Canvas(buf, pagesize=A4)
+        c.setTitle(f'{fname} {lname} Resume ({tempId})')
+
+
         #Draw the style rectangles
         d = Drawing(300, canvas_height)
         d.add(Rect(0, 610, canvas_width, 200, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
         d.add(Rect(30, 0, 210, canvas_height, fillColor=colors.HexColor('#6B9999'), strokeColor=None))
         d.drawOn(c, 0, 0)
 
-        
         #Drawing a Circle for the Image
         circle_drawing = Drawing(width=100, height=100)
         circle = Circle(55, 50, 90, strokeColor=None, fillColor=colors.white)
@@ -106,10 +109,8 @@ def createResume(request):
 
             #Place it over the circle
             c.drawImage(image_path, 48.5, 633.5, width=173, height=173, mask='auto')
-        
-        # c.showPage()
 
-        #Draw the Header text
+        # #Draw the Header text
         c.setFont('LatoBold', 28)
         c.drawString(270, 720, fname.upper())
         c.drawString(270, 690, lname.upper())
@@ -118,16 +119,16 @@ def createResume(request):
         profession = Paragraph(profession_txt, style=style["Normal"])
         profession.wrapOn(c, canvas_width, canvas_height)
         profession.drawOn(c, 270, 670, mm)
+        
 
         #Draw Profile Section
-        
+
         contact_data = [
             [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf095&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;{contactNo}</font>""", style=style["Content"])],
             [Paragraph("""<font name="FontAwesome" color="white" size="20">\uf0e0&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;{email}</font>""", style=style["Content"])],
             [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;125 Anywhere, Any City, State, Country 405475</font>""", style=style["Content"])]
         ]
         email_rHeight = 40
-        print(len(email))
         if len(email) > 19:
             email_rHeight = 60
         
@@ -140,20 +141,24 @@ def createResume(request):
             [Paragraph("""<font name="LatoBold" size="16" color="white">PROFILE</font>""", style=style["SectionTitle"])], 
             [Paragraph(f"""<font name="Lora" color="white" size="14">{profile_txt}</font>""", style=style["Content"])], #max length 235
             [Paragraph("""<font name="LatoBold" size="16" color="white">CONTACT ME</font>""", style=style["SectionTitle"])], 
-            [cont_table],
+            
             ]
         
         
-        
-        profile = Table(profile_data, rowHeights=[30, 250, 30, 200])
+        profile = Table(profile_data, rowHeights=[30, 250, 30], spaceAfter=10)
         profile.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), "LEFT"),
-        ('VALIGN',(0,0),(-1, -1),'TOP')])
+            ('ALIGN', (0, 0), (-1, -1), "LEFT"),
+            ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
-        profile.wrapOn(c, 180, 200)
-        profile.drawOn(c, 50, 80)
+        profilestory = []
+        profilestory.append(profile)
+        profilestory.append(cont_table)
+        
+        
+        profileFrame = Frame(30, 0, 210, 610, showBoundary=0, topPadding=10, bottomPadding=10)
+        profileFrame.addFromList(profilestory,c)
 
-        #Draw Main Page
+        # #Draw Main Page
 
         #Education Section
         ed_txt = [
@@ -179,8 +184,8 @@ def createResume(request):
             skill_txt.append(
                 [Paragraph(f"""<font name="Lora" size="14">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
             )
-        edTable = Table(ed_txt, colWidths=[canvas_width-300])
-        skillTable = Table(skill_txt, colWidths=[canvas_width-300])
+        edTable = Table(ed_txt, colWidths=330)
+        skillTable = Table(skill_txt, colWidths=330)
 
         
         contentData = [
@@ -188,13 +193,18 @@ def createResume(request):
             [skillTable],
         ]
 
-        mainTable = Table(contentData, colWidths=canvas_width-300)
-        mainTable.wrapOn(c, canvas_width, canvas_height-10)
-        mainTable.drawOn(c, 255, 290)
+        mainTable = Table(contentData, colWidths=340)
+        mainTable.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), "LEFT"),
+            ('VALIGN',(0,0),(-1, -1),'TOP')])
+        )
 
-        
-
+        contentFrame = Frame(240, 0, 355, 610, showBoundary=0, topPadding=10, bottomPadding=10 , rightPadding=12, leftPadding=12)
+        contentStory = []
+        contentStory.append(mainTable)
+        contentFrame.addFromList(contentStory, c)
         c.save()
+
         if uploaded_image:
             if os.path.exists(image_path):
                 os.remove(image_path)

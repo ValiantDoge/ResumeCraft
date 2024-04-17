@@ -46,7 +46,7 @@ export default function Form(){
     
     const [profileChars, setProfileChars] = useState(0);
     function countChars(e) {
-      setProfileChars(235 - e.target.value.length);
+      setProfileChars(250 - e.target.value.length);
     }
 
     const { tempId } = useParams();
@@ -274,7 +274,7 @@ export default function Form(){
           <div className="relative z-0 w-full mb-5 group">
             <textarea
               type="text"
-              maxLength={235}
+              maxLength={250}
               id="id_profile"
               className="relative block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
@@ -282,8 +282,8 @@ export default function Form(){
               {...register("profile", {
                 required: "This field is required",
                 maxLength: {
-                  value: 235,
-                  message: "Maximum 235 characters allowed",
+                  value: 250,
+                  message: "Maximum 250 characters allowed",
                 },
                 },
             
@@ -294,7 +294,7 @@ export default function Form(){
             }}
             
             />
-            <span className="absolute -bottom-5 right-1 text-sm text-gray-400">{profileChars}/235</span>
+            <span className="absolute -bottom-5 right-1 text-sm text-gray-400">{profileChars}/250</span>
             <p className="text-red-500">{errors.profile?.message}</p>
             <label
               htmlFor="id_profile"

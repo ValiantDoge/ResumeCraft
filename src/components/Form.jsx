@@ -27,7 +27,8 @@ export default function Form(){
           skills: [{
             skill:"",
             skillLevel: ""
-          }]
+          }],
+          languages: [{lang: ""}]
         }
 
         }
@@ -43,10 +44,15 @@ export default function Form(){
       name: 'content.skills',
       control
     })
+
+    const { fields: langFields, append: langAppend, remove: langRemove } = useFieldArray({
+      name: 'content.languages',
+      control
+    })
     
     const [profileChars, setProfileChars] = useState(0);
     function countChars(e) {
-      setProfileChars(250 - e.target.value.length);
+      setProfileChars(300 - e.target.value.length);
     }
 
     const { tempId } = useParams();
@@ -122,7 +128,8 @@ export default function Form(){
       formField.append("profile", data.profile);
       formField.append("education", JSON.stringify(data.content.education));
       formField.append("skills", JSON.stringify(data.content.skills));
-      console.log(data.content.education);
+      formField.append("languages", JSON.stringify(data.content.languages));
+      
       if (Image !== null) {
         formField.append("userPicture", usrImg)
       }
@@ -274,7 +281,7 @@ export default function Form(){
           <div className="relative z-0 w-full mb-5 group">
             <textarea
               type="text"
-              maxLength={250}
+              maxLength={300}
               id="id_profile"
               className="relative block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
@@ -282,8 +289,8 @@ export default function Form(){
               {...register("profile", {
                 required: "This field is required",
                 maxLength: {
-                  value: 250,
-                  message: "Maximum 250 characters allowed",
+                  value: 300,
+                  message: "Maximum 300 characters allowed",
                 },
                 },
             
@@ -294,7 +301,7 @@ export default function Form(){
             }}
             
             />
-            <span className="absolute -bottom-5 right-1 text-sm text-gray-400">{profileChars}/250</span>
+            <span className="absolute -bottom-5 right-1 text-sm text-gray-400">{profileChars}/300</span>
             <p className="text-red-500">{errors.profile?.message}</p>
             <label
               htmlFor="id_profile"
@@ -327,7 +334,7 @@ export default function Form(){
               {edFields.map((field, index) => {
                 return (
                   <div className="relative" key={field.id}>
-                    <h2 className="text-lg mb-6">Education Details {index}</h2>
+                    <h2 className="text-lg mb-6">Education Details {index+1}</h2>
                     <div
                       className="relative z-0 w-full mb-5 group"
                       
@@ -412,7 +419,7 @@ export default function Form(){
               {skillFields.map((field, index) => {
                 return (
                   <div className="relative" key={field.id}>
-                    <h2 className="text-lg mb-6">Skillset {index}</h2>
+                    <h2 className="text-lg mb-6">Skillset {index+1}</h2>
                     <div
                       className="relative z-0 w-full mb-5 group"
                       
@@ -490,6 +497,69 @@ export default function Form(){
                   className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5"
                 >
                   Add Skill
+                </button>
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-mono mb-6">Languages Spoken</h2>
+            <div>
+              {langFields.map((field, index) => {
+                return (
+                  <div className="relative" key={field.id}>
+                    <h2 className="text-lg mb-6">Language {index+1}</h2>
+                    <div
+                      className="relative z-0 w-full mb-5 group"
+                      
+                    >
+                      <input
+                        type="text"
+                        id={`id_lang${index}`}
+                        className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        // placeholder="Univercity/College/School Name"
+                        placeholder=" "
+                        {...register(`content.languages.${index}.lang`)}
+                      />
+                      <label
+                        htmlFor={`id_lang${index}`}
+                        className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >
+                        Language
+                      </label>
+                    </div>
+
+
+                    {index > 0 && (
+                      <button
+                        onClick={() => langRemove(index)}
+                        type="button"
+                        className="absolute rounded-full bg-red-500 top-0 right-0"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6 text-white"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+              <div className="flex w-full space-x-2 justify-end">
+                <button
+                onClick={() => langAppend({lang: ""})}
+                  type="button"
+                  className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5"
+                >
+                  Add Language
                 </button>
               </div>
             </div>

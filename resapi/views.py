@@ -65,6 +65,7 @@ def createResume(request):
         uploaded_image = request.FILES.get('userPicture')
         eduData =  json.loads(request.POST.get("education"))
         skillData =  json.loads(request.POST.get("skills"))
+        langData =  json.loads(request.POST.get("languages"))
 
 
         # info = [fname, lname, email, contactNo]
@@ -80,13 +81,13 @@ def createResume(request):
 
         #Draw the style rectangles
         d = Drawing(300, canvas_height)
-        d.add(Rect(0, 610, canvas_width, 200, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
+        d.add(Rect(0, 630, canvas_width, 180, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
         d.add(Rect(30, 0, 210, canvas_height, fillColor=colors.HexColor('#6B9999'), strokeColor=None))
         d.drawOn(c, 0, 0)
 
         #Drawing a Circle for the Image
         circle_drawing = Drawing(width=100, height=100)
-        circle = Circle(55, 50, 90, strokeColor=None, fillColor=colors.white)
+        circle = Circle(55, 50, 80, strokeColor=None, fillColor=colors.white)
         circle_drawing.add(circle)
         circle_drawing.drawOn(c, 80, 670)
 
@@ -108,14 +109,14 @@ def createResume(request):
             #     img.save(image_path, format='PNG')
 
             #Place it over the circle
-            c.drawImage(image_path, 48.5, 633.5, width=173, height=173, mask='auto')
+            c.drawImage(image_path, 58.5, 643.5, width=153, height=153, mask='auto')
 
         # #Draw the Header text
         c.setFont('LatoBold', 28)
         c.drawString(270, 720, fname.upper())
         c.drawString(270, 690, lname.upper())
         c.setFont('LoraItalic', 14)
-        profession_txt = """<font name="LoraItalic" size="16">Student</font>"""
+        profession_txt = """<font name="LoraItalic" size="14">Student</font>"""
         profession = Paragraph(profession_txt, style=style["Normal"])
         profession.wrapOn(c, canvas_width, canvas_height)
         profession.drawOn(c, 270, 670, mm)
@@ -124,9 +125,9 @@ def createResume(request):
         #Draw Profile Section
 
         contact_data = [
-            [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf095&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;{contactNo}</font>""", style=style["Content"])],
-            [Paragraph("""<font name="FontAwesome" color="white" size="20">\uf0e0&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;{email}</font>""", style=style["Content"])],
-            [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="14">&ensp;125 Anywhere, Any City, State, Country 405475</font>""", style=style["Content"])]
+            [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf095&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;{contactNo}</font>""", style=style["Content"])],
+            [Paragraph("""<font name="FontAwesome" color="white" size="20">\uf0e0&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;{email}</font>""", style=style["Content"])],
+            [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;125 Anywhere, Any City, State, Country 405475</font>""", style=style["Content"])]
         ]
         email_rHeight = 40
         if len(email) > 19:
@@ -138,9 +139,9 @@ def createResume(request):
             ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
         profile_data = [
-            [Paragraph("""<font name="LatoBold" size="16" color="white">PROFILE</font>""", style=style["SectionTitle"])], 
-            [Paragraph(f"""<font name="Lora" color="white" size="14">{profile_txt}</font>""", style=style["Content"])], #max length 235
-            [Paragraph("""<font name="LatoBold" size="16" color="white">CONTACT ME</font>""", style=style["SectionTitle"])], 
+            [Paragraph("""<font name="LatoBold" size="13" color="white">PROFILE</font>""", style=style["SectionTitle"])], 
+            [Paragraph(f"""<font name="Lora" color="white" size="12">{profile_txt}</font>""", style=style["Content"])], #max length 235
+            [Paragraph("""<font name="LatoBold" size="13" color="white">CONTACT ME</font>""", style=style["SectionTitle"])], 
             
             ]
         
@@ -150,47 +151,57 @@ def createResume(request):
             ('ALIGN', (0, 0), (-1, -1), "LEFT"),
             ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
-        profilestory = []
-        profilestory.append(profile)
-        profilestory.append(cont_table)
         
         
-        profileFrame = Frame(30, 0, 210, 610, showBoundary=0, topPadding=10, bottomPadding=10)
-        profileFrame.addFromList(profilestory,c)
+        
+        
 
         # #Draw Main Page
 
         #Education Section
+        #Education Table Data 
         ed_txt = [
-            [Paragraph("""<font name="FontAwesome" size="20">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="16">EDUCATION</font>""", style=style["SectionTitle"])],
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">EDUCATION</font>""", style=style["SectionTitle"])],
         ]
         for clg in eduData:
             ed_txt.append(
-               [Paragraph(f"""<font name="LoraBold" size="14">{clg["uniName"]}</font>""", style=style["Content"])],
+               [Paragraph(f"""<font name="LoraBold" size="12">{clg["uniName"].upper()}</font>""", style=style["Content"])],
                
             )
             ed_txt.append(
-                [Paragraph(f"""<font name="Lora" size="14">{clg["eddesc"]}</font>""", style=style["Content"])],
+                [Paragraph(f"""<font name="Lora" size="12">{clg["eddesc"]}</font>""", style=style["Content"])],
             )
 
+        #Skill Table Data
         skill_txt = [
-            [Paragraph("""<font name="FontAwesome" size="20">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="16">SKILLS</font>""", style=style["SectionTitle"])],
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">SKILLS</font>""", style=style["SectionTitle"])],
         ]
         for skill in skillData:
             skill_txt.append(
-               [Paragraph(f"""<font name="LoraBold" size="14">{skill["skill"]}</font>""", style=style["Content"])],
+               [Paragraph(f"""<font name="LoraBold" size="12">{skill["skill"]}</font>""", style=style["Content"])],
                
             )
             skill_txt.append(
-                [Paragraph(f"""<font name="Lora" size="14">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
+                [Paragraph(f"""<font name="Lora" size="12">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
+            )
+        #lang Table Data
+        lang_txt = [
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">LANGUAGES</font>""", style=style["SectionTitle"])],
+        ]
+        for lang in langData:
+            lang_txt.append(
+               [Paragraph(f"""<font name="Lora" size="12">{lang["lang"]}</font>""", style=style["Content"])],
+               
             )
         edTable = Table(ed_txt, colWidths=330)
         skillTable = Table(skill_txt, colWidths=330)
+        langTable = Table(lang_txt, colWidths=330)
 
         
         contentData = [
             [edTable],
             [skillTable],
+            [langTable]
         ]
 
         mainTable = Table(contentData, colWidths=340)
@@ -199,7 +210,14 @@ def createResume(request):
             ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
 
-        contentFrame = Frame(240, 0, 355, 610, showBoundary=0, topPadding=10, bottomPadding=10 , rightPadding=12, leftPadding=12)
+        profileFrame = Frame(30, 0, 210, 610, showBoundary=0, topPadding=10, bottomPadding=10)
+        profilestory = []
+        profilestory.append(profile)
+        profilestory.append(cont_table)
+        profileFrame.addFromList(profilestory,c)
+
+
+        contentFrame = Frame(240, 0, 355, 630, showBoundary=1, topPadding=10, bottomPadding=10 , rightPadding=12, leftPadding=12)
         contentStory = []
         contentStory.append(mainTable)
         contentFrame.addFromList(contentStory, c)

@@ -49,6 +49,7 @@ style.add(ParagraphStyle(name='IconHere',
 style.add(ParagraphStyle(name='SectionTitle',
                          fontFamily='Lato',
                          leading=30,
+                         spaceBefore=10,
 
                           ))
 
@@ -157,50 +158,59 @@ def createResume(request):
         
 
         # #Draw Main Page
+        def columnize(data, interval):
+            ret = []
+            for i in range(0, len(data), interval * 2):
+                for j in range(min(interval, len(data) - i)):
+                    ret.append(data[i + j] + (data[i + j + interval] if i + j + interval < len(data) else []))
+            return ret
 
         #Education Section
         #Education Table Data 
-        ed_txt = [
-            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">EDUCATION</font>""", style=style["SectionTitle"])],
-        ]
+        ed_txt = []
         for clg in eduData:
-            ed_txt.append(
-               [Paragraph(f"""<font name="LoraBold" size="12">{clg["uniName"].upper()}</font>""", style=style["Content"])],
-               
-            )
-            ed_txt.append(
-                [Paragraph(f"""<font name="Lora" size="12">{clg["eddesc"]}</font>""", style=style["Content"])],
-            )
+            if clg["uniName"]:
+                ed_txt.append(
+                [Paragraph(f"""<font name="LoraBold" size="12">{clg["uniName"].upper()}</font>""", style=style["Content"])],
+                
+                )
+                ed_txt.append(
+                    [Paragraph(f"""<font name="Lora" size="12">{clg["eddesc"]}</font>""", style=style["Content"])],
+                )
 
         #Skill Table Data
-        skill_txt = [
-            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">SKILLS</font>""", style=style["SectionTitle"])],
-        ]
+        skill_txt = []
         for skill in skillData:
-            skill_txt.append(
-               [Paragraph(f"""<font name="LoraBold" size="12">{skill["skill"]}</font>""", style=style["Content"])],
-               
-            )
-            skill_txt.append(
-                [Paragraph(f"""<font name="Lora" size="12">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
-            )
+            if skill["skill"]:
+                skill_txt.append(
+                [Paragraph(f"""<font name="LoraBold" size="12">{skill["skill"]}</font>""", style=style["Content"])],
+                
+                )
+                skill_txt.append(
+                    [Paragraph(f"""<font name="Lora" size="12">Level: {skill["skillLevel"]}</font>""", style=style["Content"])],
+                )
         #lang Table Data
-        lang_txt = [
-            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">LANGUAGES</font>""", style=style["SectionTitle"])],
-        ]
+        lang_txt = []
         for lang in langData:
-            lang_txt.append(
-               [Paragraph(f"""<font name="Lora" size="12">{lang["lang"]}</font>""", style=style["Content"])],
-               
-            )
+            if lang["lang"]:
+                lang_txt.append(
+                [Paragraph(f"""<font name="Lora" size="12">{lang["lang"]}</font>""", style=style["Content"])],
+                
+                )
+
+        langColData = columnize(lang_txt, 2)
+        skillColData =  columnize(skill_txt, 2)
         edTable = Table(ed_txt, colWidths=330)
-        skillTable = Table(skill_txt, colWidths=330)
-        langTable = Table(lang_txt, colWidths=330)
+        skillTable = Table(skillColData, colWidths=150) 
+        langTable = Table(langColData, colWidths=150)
 
         
         contentData = [
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">EDUCATION</font>""", style=style["SectionTitle"])],
             [edTable],
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">SKILLS</font>""", style=style["SectionTitle"])],
             [skillTable],
+            [Paragraph("""<font name="FontAwesome" size="15">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="15">LANGUAGES</font>""", style=style["SectionTitle"])],
             [langTable]
         ]
 
@@ -210,14 +220,14 @@ def createResume(request):
             ('VALIGN',(0,0),(-1, -1),'TOP')])
         )
 
-        profileFrame = Frame(30, 0, 210, 610, showBoundary=0, topPadding=10, bottomPadding=10)
+        profileFrame = Frame(30, 0, 210, 610, topPadding=10, bottomPadding=10)
         profilestory = []
         profilestory.append(profile)
         profilestory.append(cont_table)
         profileFrame.addFromList(profilestory,c)
 
 
-        contentFrame = Frame(240, 0, 355, 630, showBoundary=1, topPadding=10, bottomPadding=10 , rightPadding=12, leftPadding=12)
+        contentFrame = Frame(240, 0, 355, 630, topPadding=10, bottomPadding=10 , rightPadding=12, leftPadding=12)
         contentStory = []
         contentStory.append(mainTable)
         contentFrame.addFromList(contentStory, c)

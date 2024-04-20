@@ -30,6 +30,8 @@ export default function Form(){
         setCurFormstep(step => curFormStep - 1)
       }
     }
+
+    
   
     const resumeForm = useForm({
       defaultValues: {
@@ -40,6 +42,7 @@ export default function Form(){
         email: "",
         phoneNo: "",
         profile: "",
+        profession: "",
         
         content: {
           education: [{
@@ -50,13 +53,31 @@ export default function Form(){
             skill:"",
             skillLevel: ""
           }],
-          languages: [{lang: ""}]
+          languages: [{lang: ""}],
+          workExp: [{
+              jobTitle: "",
+              company: "",
+              jobDesc: "",
+              startDate: "",
+              endDate: "",
+            }],
         }
 
         }
       },
     );
-    const { register, control, handleSubmit, formState, getValues } = resumeForm;
+    const { register, control, handleSubmit, formState, setValue } = resumeForm;
+
+    const handlePresentChange = (e, index) => {
+      const isChecked = e.target.checked;
+      if (isChecked) {
+        setValue(`content.workExp.${index}.endDate`, 'Present'); // Set the value of endDate field to 'Present'
+        document.getElementById(`id_end${index}`).disabled = true; // Disable the endDate field
+      } else {
+        setValue(`content.workExp.${index}.endDate`, ''); // Clear the value of endDate field
+        document.getElementById(`id_end${index}`).disabled = false; // Disable the endDate field
+      }
+    };
 
     function watchLength(e,limit) {
       return limit - e.target.value.length;
@@ -65,7 +86,6 @@ export default function Form(){
     const { errors } = formState;
     const { fields: edFields, append: edAppend, remove: edRemove } = useFieldArray({
       name: 'content.education',
-      max:  2,
       control
     })
     const { fields: skillFields, append: skillAppend, remove: skillRemove } = useFieldArray({
@@ -75,6 +95,11 @@ export default function Form(){
 
     const { fields: langFields, append: langAppend, remove: langRemove } = useFieldArray({
       name: 'content.languages',
+      control
+    })
+
+    const { fields: wrkFields, append: wrkAppend, remove: wrkRemove } = useFieldArray({
+      name: 'content.workExp',
       control
     })
     
@@ -151,9 +176,11 @@ export default function Form(){
       formField.append("email", data.email);
       formField.append("contactNo", data.phoneNo);
       formField.append("profile", data.profile);
+      formField.append("profession", data.profession);
       formField.append("education", JSON.stringify(data.content.education));
       formField.append("skills", JSON.stringify(data.content.skills));
       formField.append("languages", JSON.stringify(data.content.languages));
+      formField.append("workExp", JSON.stringify(data.content.workExp));
       
       if (Image !== null) {
         formField.append("userPicture", usrImg)
@@ -237,53 +264,7 @@ export default function Form(){
           
         </nav>
 
-            {/* Navigation */}
-          <div className='py-5'>
-            <div className='flex justify-between'>
-              <button
-                type='button'
-                onClick={handlePrev}
-                disabled={curFormStep === 0}
-                className='rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth='1.5'
-                  stroke='currentColor'
-                  className='h-6 w-6'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M15.75 19.5L8.25 12l7.5-7.5'
-                  />
-                </svg>
-              </button>
-              <button
-                type='button'
-                onClick={handleNext}
-                disabled={curFormStep === steps.length - 1}
-                className='rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth='1.5'
-                  stroke='currentColor'
-                  className='h-6 w-6'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M8.25 4.5l7.5 7.5-7.5 7.5'
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+            
         <form
           className="bg-slate-100 p-6 px-32 rounded-md"
           onSubmit={handleSubmit(sendData)}
@@ -404,6 +385,27 @@ export default function Form(){
                 </div>
 
                 <div className="relative z-0 w-full mb-5 group">
+                  <input
+                    type="text"
+                    id="id_prof"
+                    maxLength={36}
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    required
+                    {...register("profession", {
+                      required: "Profession is required", maxLength: {value: 36, message: "Maximum 36 characters allowed"}
+                    })}
+                  />
+                  <p className="text-red-500">{errors.profession?.message}</p>
+                  <label
+                    htmlFor="id_prof"
+                    className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  >
+                    Profession (Example: Student)
+                  </label>
+                </div>
+
+                <div className="relative z-0 w-full mb-5 group">
                   <textarea
                     type="text"
                     maxLength={300}
@@ -457,10 +459,14 @@ export default function Form(){
                         <input
                           type="text"
                           id={`id_uniName${index}`}
+                          maxLength={40}
                           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                           // placeholder="Univercity/College/School Name"
                           placeholder=" "
-                          {...register(`content.education.${index}.uniName`)}
+                          {...register(`content.education.${index}.uniName`, {maxLength: {
+                            value: 40,
+                            message: "Maximum 40 characters allowed",
+                          },})}
                         />
                         <label
                           htmlFor={`id_uniName${index}`}
@@ -554,10 +560,15 @@ export default function Form(){
                           <input
                             type="text"
                             id={`id_skill${index}`}
+                            maxLength={18}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             // placeholder="Univercity/College/School Name"
                             placeholder=" "
-                            {...register(`content.skills.${index}.skill`)}
+                            {...register(`content.skills.${index}.skill`, {
+                              maxLength: {
+                              value: 18,
+                              message: "Maximum 18 characters allowed",
+                            },})}
                           />
                           <label
                             htmlFor={`id_skill${index}`}
@@ -641,10 +652,14 @@ export default function Form(){
                           <input
                             type="text"
                             id={`id_lang${index}`}
+                            maxLength={18}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             // placeholder="Univercity/College/School Name"
                             placeholder=" "
-                            {...register(`content.languages.${index}.lang`)}
+                            {...register(`content.languages.${index}.lang`, {maxLength: {
+                              value: 18,
+                              message: "Maximum 18 characters allowed",
+                            },})}
                           />
                           <label
                             htmlFor={`id_lang${index}`}
@@ -696,31 +711,142 @@ export default function Form(){
             {curFormStep === 4 && (
                 <section id="wrk-section">
                 <h2 className="text-2xl font-mono mb-6">Work Experience (If any)</h2>
-                {/* <div>
-                  {langFields.map((field, index) => {
+                <div>
+                  {wrkFields.map((field, index) => {
                     return (
                       <div className="relative" key={field.id}>
-                        <h2 className="text-lg mb-6">Language {index + 1}</h2>
+                        <h2 className="text-lg mb-6">Work Experience {index + 1}</h2>
                         <div className="relative z-0 w-full mb-5 group">
                           <input
                             type="text"
-                            id={`id_lang${index}`}
+                            maxLength={40}
+                            id={`id_jobT${index}`}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             // placeholder="Univercity/College/School Name"
                             placeholder=" "
-                            {...register(`content.languages.${index}.lang`)}
+                            {...register(`content.workExp.${index}.jobTitle`, {maxLength: {
+                              value: 40,
+                              message: "Maximum 40 characters allowed",
+                            },})}
                           />
                           <label
-                            htmlFor={`id_lang${index}`}
+                            htmlFor={`id_jobT${index}`}
                             className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                           >
-                            Language
+                            Job Title
                           </label>
+
+                          
                         </div>
+
+                        <div className="relative z-0 w-full mb-5 group">
+                          <input
+                              type="text"
+                              id={`id_comp${index}`}
+                              maxLength={20}
+                              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                              // placeholder="Univercity/College/School Name"
+                              placeholder=" "
+                              {...register(`content.workExp.${index}.company`, {maxLength: {
+                                value: 20,
+                                message: "Maximum 20 characters allowed",
+                              },})}
+                            />
+                            <label
+                              htmlFor={`id_comp${index}`}
+                              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                              Company name
+                            </label>
+
+                        </div>
+
+                        <div className="relative z-0 w-full mb-5 group">
+                        <textarea
+                          type="text"
+                          maxLength={100}
+                          id={`id_jobdesc${index}`}
+                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                          // placeholder="Mention the degree or course you have done or time period of study"
+                          placeholder=" "
+                          {...register(`content.workExp.${index}.jobDesc`, {
+                            maxLength: {
+                              value: 100,
+                              message: "Maximum 100 characters allowed",
+                            },
+                          })}
+
+                          onChange={(e) => {
+                            const jobDescChars = watchLength(e, 100);
+                            document.getElementById(`jobDescCount${index}`).innerText = jobDescChars;
+                          }}
+                        />
+                         <span className="absolute -bottom-5 right-1 text-sm text-gray-400">
+                          <span id={`jobDescCount${index}`}>100</span>/100
+                          </span>
+                          <p className="text-red-500">{errors.content?.workExp?.jobDesc?.message}</p>
+                        <label
+                          htmlFor={`id_jobdesc${index}`}
+                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                          Job Description
+                        </label>
+                      </div>
+
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div className="relative z-0 w-full mb-5 group ">
+                                <input
+                                type="month"
+                                id={`id_start${index}`}
+                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                // placeholder="Univercity/College/School Name"
+                                placeholder=" "
+                                {...register(`content.workExp.${index}.startDate`)}
+                              />
+                              <label
+                                htmlFor={`id_start${index}`}
+                                className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                              >
+                                Start Date
+                              </label>
+                          </div>
+
+                          <div className="relative z-0 w-full mb-5 group ">
+                            <input
+                                  type="month"
+                                  id={`id_end${index}`}
+                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                  // placeholder="Univercity/College/School Name"
+                                  placeholder=" "
+                                  {...register(`content.workExp.${index}.endDate`)}
+                                />
+                                <label
+                                  htmlFor={`id_end${index}`}
+                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                >
+                                  End Date
+                                </label>
+
+                              
+                          </div>
+
+                          </div>
+                          <div className="flex w-full justify-end mb-6">
+                          <label
+                                  htmlFor={`id_present${index}`}
+                                  className="peer-focus:font-medium text-sm mr-10"
+                                >
+                                  Present
+                                </label>
+                            <input type="checkbox" id={`id_present${index}`} onChange={(e) => {handlePresentChange(e, index)}} />
+
+                            
+                          </div>
   
                         {index > 0 && (
                           <button
-                            onClick={() => langRemove(index)}
+                            onClick={() => wrkRemove(index)}
                             type="button"
                             className="absolute rounded-full bg-red-500 top-0 right-0"
                           >
@@ -745,14 +871,15 @@ export default function Form(){
                   })}
                   <div className="flex w-full space-x-2 justify-end">
                     <button
-                      onClick={() => langAppend({ lang: "" })}
+                      onClick={() => wrkAppend({ jobTitle: "", company: "", jobDesc: "", startDate: "", endDate: "" })}
                       type="button"
-                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5"
+                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={wrkFields.length >= 2}
                     >
-                      Add Language
+                      Add Work Experience
                     </button>
                   </div>
-                </div> */}
+                </div>
 
                 <button
                   // onClick={(e)=>sendData(e)}
@@ -768,7 +895,53 @@ export default function Form(){
           </div>
 
           
-
+              {/* Navigation */}
+          <div className='py-5'>
+            <div className='flex justify-between'>
+              <button
+                type='button'
+                onClick={handlePrev}
+                disabled={curFormStep === 0}
+                className='rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth='1.5'
+                  stroke='currentColor'
+                  className='h-6 w-6'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M15.75 19.5L8.25 12l7.5-7.5'
+                  />
+                </svg>
+              </button>
+              <button
+                type='button'
+                onClick={handleNext}
+                disabled={curFormStep === steps.length - 1}
+                className='rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth='1.5'
+                  stroke='currentColor'
+                  className='h-6 w-6'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M8.25 4.5l7.5 7.5-7.5 7.5'
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
 
         </form>
 

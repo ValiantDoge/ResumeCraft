@@ -1,4 +1,4 @@
-import Form from "../components/Form";
+import TempOneForm from "../components/TempOneForm.jsx";
 import Header from '../components/Header.jsx';
 import { useParams } from "react-router-dom";
 
@@ -12,8 +12,10 @@ export default function ResumeForm(){
                 <div className="p-10 flex justify-center">
                     <img src={ imgUrl } className="w-3/4 h-3/4 bg-slate-200 p-3 rounded-md" alt="resumeTemplate" />
                 </div>
-
-                <Form />
+                {tempId === '1' && (
+                    <TempOneForm />
+                )}
+                
             </div>
             
         </div>

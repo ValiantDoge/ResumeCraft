@@ -459,13 +459,13 @@ export default function Form(){
                         <input
                           type="text"
                           id={`id_uniName${index}`}
-                          maxLength={40}
+                          maxLength={50}
                           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                           // placeholder="Univercity/College/School Name"
                           placeholder=" "
                           {...register(`content.education.${index}.uniName`, {maxLength: {
-                            value: 40,
-                            message: "Maximum 40 characters allowed",
+                            value: 50,
+                            message: "Maximum 50 characters allowed",
                           },})}
                         />
                         <label
@@ -719,14 +719,14 @@ export default function Form(){
                         <div className="relative z-0 w-full mb-5 group">
                           <input
                             type="text"
-                            maxLength={40}
+                            maxLength={50}
                             id={`id_jobT${index}`}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             // placeholder="Univercity/College/School Name"
                             placeholder=" "
                             {...register(`content.workExp.${index}.jobTitle`, {maxLength: {
-                              value: 40,
-                              message: "Maximum 40 characters allowed",
+                              value: 50,
+                              message: "Maximum 50 characters allowed",
                             },})}
                           />
                           <label
@@ -743,13 +743,13 @@ export default function Form(){
                           <input
                               type="text"
                               id={`id_comp${index}`}
-                              maxLength={20}
+                              maxLength={30}
                               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                               // placeholder="Univercity/College/School Name"
                               placeholder=" "
                               {...register(`content.workExp.${index}.company`, {maxLength: {
-                                value: 20,
-                                message: "Maximum 20 characters allowed",
+                                value: 30,
+                                message: "Maximum 30 characters allowed",
                               },})}
                             />
                             <label

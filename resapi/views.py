@@ -4,7 +4,7 @@ from django.conf import settings
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.pdfmetrics import registerFont, registerFontFamily
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, letter
 from reportlab.lib import colors
 from reportlab.graphics.shapes import *
 from PIL import Image as PImage
@@ -50,7 +50,7 @@ style.add(ParagraphStyle(name='IconHere',
 
 style.add(ParagraphStyle(name='SectionTitle',
                          fontFamily='Lato',
-                         leading=25,
+                         leading=20,
                           ))
 
 def datetoString(date):
@@ -87,19 +87,20 @@ def createResume(request):
             if all_empty:
                 workData = None
 
-            canvas_width, canvas_height = A4
+            canvas_width = letter[0]
+            canvas_height = A4[1]
             #Creating the Canvas
             buf = io.BytesIO()
 
-            c = canvas.Canvas(buf, pagesize=A4)
+            c = canvas.Canvas(buf, pagesize=[canvas_width, A4[1]])
             c.setTitle(f'{fname} {lname} Resume ({tempId})')
 
-            contentFontsize = 12 if workData else 14
-            contentHeadFontSize = 14 if workData else 16
+            contentFontsize = 10 if workData else 14
+            contentHeadFontSize = 12 if workData else 16
             
             #Draw the style rectangles
             d = Drawing(300, canvas_height)
-            d.add(Rect(0, 630, canvas_width, 180, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
+            d.add(Rect(0, 650, canvas_width, 160, fillColor=colors.HexColor('#EBC9BB'), strokeColor=None))
             d.add(Rect(30, 0, 210, canvas_height, fillColor=colors.HexColor('#6B9999'), strokeColor=None))
             d.drawOn(c, 0, 0)
 
@@ -107,7 +108,7 @@ def createResume(request):
             circle_drawing = Drawing(width=100, height=100)
             circle = Circle(55, 50, 80, strokeColor=None, fillColor=colors.white)
             circle_drawing.add(circle)
-            circle_drawing.drawOn(c, 80, 670)
+            circle_drawing.drawOn(c, 80, 680)
 
             #Get the image from the POST response and Place it over the circle
             if uploaded_image:
@@ -127,17 +128,17 @@ def createResume(request):
                 #     img.save(image_path, format='PNG')
 
                 #Place it over the circle
-                c.drawImage(image_path, 58.5, 643.5, width=153, height=153, mask='auto')
+                c.drawImage(image_path, 58.5, 653.5, width=153, height=153, mask='auto')
 
             # #Draw the Header text
             c.setFont('LatoBold', 28)
-            c.drawString(270, 720, fname.upper())
-            c.drawString(270, 690, lname.upper())
+            c.drawString(270, 740, fname.upper())
+            c.drawString(270, 710, lname.upper())
             c.setFont('LoraItalic', 14)
             
             profession = Paragraph(f"""<font name="LoraItalic" size="14">{prof}</font>""", style=style["Normal"])
             profession.wrapOn(c, canvas_width, canvas_height)
-            profession.drawOn(c, 270, 670, mm)
+            profession.drawOn(c, 270, 690, mm)
             
 
             #Draw Profile Section
@@ -222,11 +223,11 @@ def createResume(request):
 
             langColData = columnize(lang_txt, 2)
             skillColData =  columnize(skill_txt, 2)
-            edTable = Table(ed_txt, colWidths=330)
+            edTable = Table(ed_txt, colWidths=350)
             skillTable = Table(skillColData, colWidths=150) 
             langTable = Table(langColData, colWidths=150)
             if workData:
-                workTable = Table(work_txt, colWidths=330)
+                workTable = Table(work_txt, colWidths=350)
                 contentData = [
                     [Paragraph(f"""<font name="FontAwesome" size="{contentHeadFontSize}">&nbsp;\uf054&nbsp;</font>&nbsp;&nbsp;<font name="LatoBold" size="{contentHeadFontSize}">WORK EXPERIENCE</font>""", style=style["SectionTitle"])],
                     [workTable],
@@ -248,7 +249,7 @@ def createResume(request):
                     [langTable]
                 ]
 
-            mainTable = Table(contentData, colWidths=340)
+            mainTable = Table(contentData, colWidths=400)
             mainTable.setStyle(TableStyle([
                 ('ALIGN', (0, 0), (-1, -1), "LEFT"),
                 ('VALIGN',(0,0),(-1, -1),'TOP')])
@@ -260,7 +261,7 @@ def createResume(request):
             profilestory.append(cont_table)
             profileFrame.addFromList(profilestory,c)
 
-            contentFrame = Frame(240, 0, 355, 630, topPadding=10, bottomPadding=0 , rightPadding=0, leftPadding=12)
+            contentFrame = Frame(240, 0, 400, 650, topPadding=10, bottomPadding=0 , rightPadding=0, leftPadding=12)
             contentStory = []
             contentStory.append(mainTable)
             contentFrame.addFromList(contentStory, c)

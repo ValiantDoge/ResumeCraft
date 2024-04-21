@@ -74,6 +74,7 @@ def createResume(request):
             lname = str(request.POST.get("lname"))
             email = str(request.POST.get("email"))
             contactNo = str(request.POST.get("contactNo") )
+            address = str(request.POST.get("address"))
             profile_txt = str(request.POST.get("profile"))
             prof = str(request.POST.get("profession"))
             uploaded_image = request.FILES.get('userPicture')
@@ -146,7 +147,7 @@ def createResume(request):
             contact_data = [
                 [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf095&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;{contactNo}</font>""", style=style["Content"])],
                 [Paragraph("""<font name="FontAwesome" color="white" size="20">\uf0e0&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;{email}</font>""", style=style["Content"])],
-                [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;125 Anywhere, Any City, State, Country 405475</font>""", style=style["Content"])]
+                [Paragraph("""<font name="FontAwesome" color="white" size="20">&nbsp;\uf041&nbsp;&nbsp;</font>""", style=style['IconHere']), Paragraph(f"""<font name="Lora" color="white" size="12">&ensp;{address}</font>""", style=style["Content"])]
             ]
             email_rHeight = 40
             if len(email) > 19:

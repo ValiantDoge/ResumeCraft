@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useRef } from "react";
 import { useParams } from 'react-router-dom';
 import { useForm, useFieldArray } from "react-hook-form";
+import { motion } from "framer-motion";
 // import { useNavigate } from "react-router-dom";
 
 const steps = [
@@ -9,24 +10,31 @@ const steps = [
   { id: "Step 2", name: "Education" },
   { id: "Step 3", name: "Skills" },
   { id: "Step 4", name: "Languages"},
-  { id: "Step 5", name: "Work Experience" }
+  { id: "Step 5", name: "Work Experience" },
 ]
 
 
 export default function Form(){
 
     
-
+    const [pdfData, setPdfData] = useState(null);
     const [curFormStep, setCurFormstep] = useState(0);
+    const [previousFormStep, setPreviousFormStep] = useState(0)
+    const delta = curFormStep - previousFormStep;
+
+
+    
 
     const handleNext = () => {
       if(curFormStep < steps.length - 1){
+        setPreviousFormStep(curFormStep)
         setCurFormstep(step => curFormStep + 1)
       }
     }
 
     const handlePrev = () => {
       if (curFormStep > 0) {
+        setPreviousFormStep(curFormStep)
         setCurFormstep(step => curFormStep - 1)
       }
     }
@@ -41,8 +49,10 @@ export default function Form(){
         },
         email: "",
         phoneNo: "",
+        address: "",
         profile: "",
         profession: "",
+
         
         content: {
           education: [{
@@ -175,6 +185,7 @@ export default function Form(){
       formField.append("lname", data.name.lname);
       formField.append("email", data.email);
       formField.append("contactNo", data.phoneNo);
+      formField.append("address", data.address);
       formField.append("profile", data.profile);
       formField.append("profession", data.profession);
       formField.append("education", JSON.stringify(data.content.education));
@@ -199,12 +210,19 @@ export default function Form(){
 
         
         //download file here
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'resume.pdf');
-        document.body.appendChild(link);
-        link.click();
+        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.setAttribute('download', 'resume.pdf');
+        // document.body.appendChild(link);
+        // link.click();
+        steps.push({ id: "Step 6", name: "Preview" });
+        setCurFormstep(5);
+        
+        const pdfBlob = new Blob([response.data], {type: 'application/pdf'});
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        console.log(pdfUrl);
+        setPdfData(pdfUrl);
       })
 
 
@@ -266,12 +284,15 @@ export default function Form(){
 
             
         <form
-          className="bg-slate-100 p-6 px-32 rounded-md"
+          className="shadow-md p-6 px-14 rounded-md"
           onSubmit={handleSubmit(sendData)}
           noValidate
         >
           {curFormStep === 0 && (
-            <section id="personal-form">
+            <motion.div id="personal-form" 
+            initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}>
                 <h2 className="text-2xl font-mono mb-6">Personal Details</h2>
                 <div className="grid md:grid-cols-2 md:gap-6">
                   <div
@@ -366,7 +387,7 @@ export default function Form(){
                 <div className="relative z-0 w-full mb-5 group">
                   <input
                     type="tel"
-                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    pattern="/^\+(?:[0-9] ?){6,14}[0-9]$/"
                     id="id_phoneNo"
                     className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                     placeholder=" "
@@ -380,7 +401,27 @@ export default function Form(){
                     htmlFor="id_phoneNo"
                     className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                   >
-                    Phone number (123-456-7890)
+                    Phone number (Eg: +91 1234567890)
+                  </label>
+                </div>
+
+                <div className="relative z-0 w-full mb-5 group">
+                  <input
+                    type="address"
+                    id="id_address"
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    required
+                    {...register("address", {
+                      required: "Address is required",
+                    })}
+                  />
+                  <p className="text-red-500">{errors.address?.message}</p>
+                  <label
+                    htmlFor="id_address"
+                    className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  >
+                    Address
                   </label>
                 </div>
 
@@ -438,7 +479,7 @@ export default function Form(){
                     About you
                   </label>
                 </div>
-                </section>
+                </motion.div >
           )}
           
           
@@ -446,7 +487,10 @@ export default function Form(){
 
           <div className="grid grid-cols-1">
             {curFormStep === 1 && (
-              <section id="education-section">
+              <motion.div  id="education-section"
+              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}>
               <h2 className="text-2xl font-mono mb-6">Add Education (Max. 2)</h2>
               <div>
                 {edFields.map((field, index) => {
@@ -544,12 +588,15 @@ export default function Form(){
                   </button>
                 </div>
               </div>
-              </section>
+              </motion.div >
             )}
             
             
             {curFormStep === 2 && (
-              <section id="skill-section">
+              <motion.div  id="skill-section"
+              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}>
                 <h2 className="text-2xl font-mono mb-6">Skills</h2>
                 <div>
                   {skillFields.map((field, index) => {
@@ -637,11 +684,14 @@ export default function Form(){
                     </button>
                   </div>
                 </div>
-              </section>
+              </motion.div >
             )}
             
             {curFormStep === 3 && (
-                <section id="lang-section">
+                <motion.div  id="lang-section"
+                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}>
                 <h2 className="text-2xl font-mono mb-6">Languages Spoken</h2>
                 <div>
                   {langFields.map((field, index) => {
@@ -705,11 +755,14 @@ export default function Form(){
                     </button>
                   </div>
                 </div>
-              </section>
+              </motion.div >
             )}
 
             {curFormStep === 4 && (
-                <section id="wrk-section">
+                <motion.div  id="wrk-section"
+                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}>
                 <h2 className="text-2xl font-mono mb-6">Work Experience (If any)</h2>
                 <div>
                   {wrkFields.map((field, index) => {
@@ -888,9 +941,29 @@ export default function Form(){
                 >
                   Submit
                 </button>
-              </section>
+              </motion.div >
             )}
+
+            {curFormStep === 5 && pdfData && (
+              
+                <motion.div  
+                id="wrk-section"
+                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="pdf-viewer">
+                  <embed src={pdfData} type="application/pdf" width="100%" height="800px" className="my-6" />
+                    <a href={pdfData} download="resume.pdf" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+                      Download Resume
+                    </a>
+                              
+                              
+                </motion.div>
+             
+            )}
+
             
+                        
             
           </div>
 

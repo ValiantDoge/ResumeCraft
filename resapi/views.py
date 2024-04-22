@@ -53,6 +53,12 @@ style.add(ParagraphStyle(name='SectionTitle',
                          leading=20,
                           ))
 
+style.add(ParagraphStyle(name='NameTitle',
+                         fontFamily='Lato',
+                         leading=30,
+                         alignment=1,
+                          ))
+
 def datetoString(date):
             return datetime.strftime(parse(date), "%B %Y")
         
@@ -275,5 +281,63 @@ def createResume(request):
 
             buf.seek(0)
             return FileResponse(buf, as_attachment=True, filename='resume.pdf')
+
+        elif tempId == '2':
+            fname = str(request.POST.get("fname"))
+            lname = str(request.POST.get("lname"))
+            email = str(request.POST.get("email"))
+            contactNo = str(request.POST.get("contactNo") )
+            address = str(request.POST.get("address"))
+            profile_txt = str(request.POST.get("profile"))
+            eduData =  json.loads(request.POST.get("education"))
+            skillData =  json.loads(request.POST.get("skills"))
+            langData =  json.loads(request.POST.get("languages"))
+            workData =  json.loads(request.POST.get("workExp"))
+
+            buf = io.BytesIO()
+
+            doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=10, leftMargin=10, topMargin=10, bottomMargin=10, title=f'{fname} {lname} Resume ({tempId})')
+            font_size = 11
+            
+            story = []
+
+            #Header
+            
+            contactInfo = []
+            if address:
+                contactInfo.append([Paragraph(f"""<font size={font_size}>{address}</font>""", style=style["Content"])])
+            if email:
+                contactInfo.append([Paragraph(f"""<font size={font_size}>{email}</font>""", style=style["Content"])])
+            if contactNo:
+                contactInfo.append([Paragraph(f"""<font size={font_size}>{contactNo}</font>""", style=style["Content"])])
+
+            contactTable = Table(contactInfo, colWidths=200)
+
+            socialInfo = [
+                [Paragraph(f"""<font size={font_size}>github.com/gergelyorosz</font>""", style=style["Content"])],
+                [Paragraph(f"""<font size={font_size}>linkedin.com/in/gergelyorosz</font>""", style=style["Content"])],
+                [Paragraph(f"""<font size={font_size}>instagram.com/gergelyorosz</font>""", style=style["Content"])]
+            ]
+            socialTable = Table(socialInfo, colWidths=200)
+            
+            header = [
+                [contactTable, Paragraph(f"""<font size="24">{fname} {lname}</font>""", style=style["NameTitle"]), socialTable],
+            ]
+            headerTable = Table(header, spaceAfter=10)
+            headerTable.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (-1, -1), "LEFT"),
+                ('ALIGN', (0, 3), (0, 3), "RIGHT"),
+                ('VALIGN',(0,0),(-1, -1),'MIDDLE')])
+            )
+
+            aboutMe = Paragraph(f"""<font size"{font_size}>{profile_txt}</font>""", style=style["Content"])
+            story.append(headerTable)
+            story.append(aboutMe)
+            doc.build(story)
+
+            buf.seek(0)
+            return FileResponse(buf, as_attachment=True, filename='resume.pdf')
+
+
 
     return Response({'message': 'Message From Django'})

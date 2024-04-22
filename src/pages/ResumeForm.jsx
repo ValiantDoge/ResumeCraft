@@ -1,4 +1,5 @@
 import TempOneForm from "../components/TempOneForm.jsx";
+import TempTwoForm from "../components/TempTwoForm.jsx";
 import Header from '../components/Header.jsx';
 import { useParams } from "react-router-dom";
 
@@ -14,6 +15,10 @@ export default function ResumeForm(){
                 </div>
                 {tempId === '1' && (
                     <TempOneForm />
+                )}
+
+                {tempId === '2' && (
+                    <TempTwoForm />
                 )}
                 
             </div>

@@ -20,6 +20,10 @@ from rest_framework.response import Response
 import json
 
 # Create your views here.
+style = getSampleStyleSheet()
+registerFont(TTFont('Calibri', os.path.join(settings.BASE_DIR, 'public', 'fonts','Calibri', 'Calibri-Regular.ttf') ))
+registerFont(TTFont('CalibriBold', os.path.join(settings.BASE_DIR, 'public', 'fonts', 'Calibri','Calibri-Bold.ttf') ))
+registerFont(TTFont('CalibriItalic', os.path.join(settings.BASE_DIR, 'public', 'fonts', 'Calibri','Calibri-Italic.ttf') ))
 
 registerFont(TTFont('Lato', os.path.join(settings.BASE_DIR, 'public', 'fonts', 'Lato', 'Lato-Regular.ttf') ))
 registerFont(TTFont('LatoBold', os.path.join(settings.BASE_DIR, 'public', 'fonts', 'Lato', 'Lato-Bold.ttf') ))
@@ -35,12 +39,45 @@ registerFontFamily('Icon', normal='FontAwesome')
 
 registerFontFamily('Lora', normal='Lora', bold='LoraBold', italic='LoraItalic')
 registerFontFamily('Lato', normal='Lato', bold='LatoBlack')
-style = getSampleStyleSheet()
+registerFontFamily('Calibri', normal='Calibri', bold='CalibriBold', italic='CalibriItalic',boldItalic='CalibriItalic')
+
+
+#Temp2 Styles
+style.add(ParagraphStyle(name='ContentRightCal',
+                    fontName='Calibri',
+                    fontSize=11,
+                    leading=14,
+                    alignment=2,
+                    ))
+
+style.add(ParagraphStyle(name='NameTitleCal',
+                         fontName='Calibri',
+                         fontSize=24,
+                         leading=30,
+                         alignment=1,
+                          ))
+
+style.add(ParagraphStyle(name='ContentCal',
+                    fontName='Calibri',
+                    fontSize=11,
+                    leading=14,
+                    ))
+
+style.add(ParagraphStyle(name='SectionTitleCal',
+                         fontName='Calibri',
+                         fontSize=14,
+                         leading=20,
+                         textColor= colors.HexColor('#1155cc'),
+                          ))
+
+#Temp2 Styles End
+
 style.add(ParagraphStyle(name='Content',
                     fontFamily='Lora',
                     fontSize=14,
                     leading=18,
                     ))
+
 
 style.add(ParagraphStyle(name='IconHere', 
                           spaceBefore=1,
@@ -53,11 +90,9 @@ style.add(ParagraphStyle(name='SectionTitle',
                          leading=20,
                           ))
 
-style.add(ParagraphStyle(name='NameTitle',
-                         fontFamily='Lato',
-                         leading=30,
-                         alignment=1,
-                          ))
+
+
+
 
 def datetoString(date):
             return datetime.strftime(parse(date), "%B %Y")
@@ -296,43 +331,56 @@ def createResume(request):
 
             buf = io.BytesIO()
 
-            doc = SimpleDocTemplate(buf, pagesize=letter, rightMargin=10, leftMargin=10, topMargin=10, bottomMargin=10, title=f'{fname} {lname} Resume ({tempId})')
+            doc = SimpleDocTemplate(buf, pagesize=(8.5*inch, 11*inch), rightMargin=0.39*inch, leftMargin=0.39*inch, topMargin=0.39*inch, bottomMargin=0.2*inch, title=f'{fname} {lname} Resume ({tempId})')
             font_size = 11
             
             story = []
 
             #Header
-            
             contactInfo = []
             if address:
-                contactInfo.append([Paragraph(f"""<font size={font_size}>{address}</font>""", style=style["Content"])])
+                contactInfo.append([Paragraph(f"""{address}""", style=style["ContentCal"])])
             if email:
-                contactInfo.append([Paragraph(f"""<font size={font_size}>{email}</font>""", style=style["Content"])])
+                contactInfo.append([Paragraph(f"""{email}""", style=style["ContentCal"])])
             if contactNo:
-                contactInfo.append([Paragraph(f"""<font size={font_size}>{contactNo}</font>""", style=style["Content"])])
+                contactInfo.append([Paragraph(f"""{contactNo}""", style=style["ContentCal"])])
 
-            contactTable = Table(contactInfo, colWidths=200)
-
+            contactTable = Table(contactInfo)
             socialInfo = [
-                [Paragraph(f"""<font size={font_size}>github.com/gergelyorosz</font>""", style=style["Content"])],
-                [Paragraph(f"""<font size={font_size}>linkedin.com/in/gergelyorosz</font>""", style=style["Content"])],
-                [Paragraph(f"""<font size={font_size}>instagram.com/gergelyorosz</font>""", style=style["Content"])]
+                [Paragraph(f"""<u>github.com/gergelyorosz</u>""", style=style["ContentRightCal"])],
+                [Paragraph(f"""<u>linkedin.com/in/gergelyorosz</u>""", style=style["ContentRightCal"])],
+                # [Paragraph(f"""<u>instagram.com/gergelyorosz</u>""", style=style["ContentRightCal"])],
             ]
-            socialTable = Table(socialInfo, colWidths=200)
-            
+            socialTable = Table(socialInfo, hAlign='RIGHT')
             header = [
-                [contactTable, Paragraph(f"""<font size="24">{fname} {lname}</font>""", style=style["NameTitle"]), socialTable],
+                [contactTable, Paragraph(f"""{fname} {lname}""", style=style["NameTitleCal"]), socialTable],
             ]
-            headerTable = Table(header, spaceAfter=10)
+            headerTable = Table(header, spaceAfter=10, colWidths=[2.57*inch, 2.57*inch, 2.57*inch])
             headerTable.setStyle(TableStyle([
-                ('ALIGN', (0, 0), (-1, -1), "LEFT"),
-                ('ALIGN', (0, 3), (0, 3), "RIGHT"),
                 ('VALIGN',(0,0),(-1, -1),'MIDDLE')])
             )
 
-            aboutMe = Paragraph(f"""<font size"{font_size}>{profile_txt}</font>""", style=style["Content"])
+            aboutMe = Paragraph(f"""{profile_txt}""", style=style["ContentCal"])
+
+            #Work Experience
+            edSection = [
+                [Paragraph(f"""<b>Work Experience</b>""", style=style["SectionTitleCal"])],
+                []
+                
+            ]
+
+            edTable = Table(edSection, spaceBefore=20)
+            edTable.setStyle(TableStyle([
+                ('LINEBELOW',(0,0),(0, 0), 1, colors.HexColor('#1155cc')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ])
+            )
+
+
+
             story.append(headerTable)
             story.append(aboutMe)
+            story.append(edTable)
             doc.build(story)
 
             buf.seek(0)

@@ -1,8 +1,10 @@
 import axios from "axios";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useParams } from 'react-router-dom';
 import { useForm, useFieldArray } from "react-hook-form";
 import { motion } from "framer-motion";
+
+
 // import { useNavigate } from "react-router-dom";
 
 const steps = [
@@ -22,8 +24,6 @@ export default function Form(){
     const [previousFormStep, setPreviousFormStep] = useState(0)
     const delta = curFormStep - previousFormStep;
 
-
-    
 
     const handleNext = () => {
       if(curFormStep < steps.length - 1){
@@ -69,6 +69,8 @@ export default function Form(){
           workExp: [{
               jobTitle: "",
               company: "",
+              companyLoc: "",
+              jobDept: "",
               jobDesc: "",
               startDate: "",
               endDate: "",
@@ -713,7 +715,7 @@ export default function Form(){
                 initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}>
-                <h2 className="text-2xl font-mono mb-6">Work Experience (If any)</h2>
+                <h2 className="text-2xl font-mono mb-6">Work Experience</h2>
                 <div>
                   {wrkFields.map((field, index) => {
                     return (
@@ -742,59 +744,83 @@ export default function Form(){
                           
                         </div>
 
-                        <div className="relative z-0 w-full mb-5 group">
-                          <input
-                              type="text"
-                              id={`id_comp${index}`}
-                              maxLength={30}
-                              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                              // placeholder="Univercity/College/School Name"
-                              placeholder=" "
-                              {...register(`content.workExp.${index}.company`, {maxLength: {
-                                value: 30,
-                                message: "Maximum 30 characters allowed",
-                              },})}
-                            />
-                            <label
-                              htmlFor={`id_comp${index}`}
-                              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                            >
-                              Company name
-                            </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6">
+                            <div className="relative z-0 w-full mb-5 group">
+                              <input
+                                  type="text"
+                                  id={`id_comp${index}`}
+                                
+                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                  
+                                  placeholder=" "
+                                  {...register(`content.workExp.${index}.company`)}
+                                />
+                                <label
+                                  htmlFor={`id_comp${index}`}
+                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                >
+                                  Company name (Eg. Uber)
+                                </label>
+                              </div>
+
+                              <div className="relative z-0 w-full mb-5 group">
+                              <input
+                                  type="text"
+                                  id={`id_compLoc${index}`}
+                                
+                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                  
+                                  placeholder=" "
+                                  {...register(`content.workExp.${index}.companyLoc`)}
+                                />
+                                <label
+                                  htmlFor={`id_compLoc${index}`}
+                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                >
+                                  Company Location (Eg. Amsterdam, Netherlands)
+                                </label>
+                              </div>
+                          
 
                         </div>
 
                         <div className="relative z-0 w-full mb-5 group">
-                        <textarea
-                          type="text"
-                          maxLength={100}
-                          id={`id_jobdesc${index}`}
-                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                          // placeholder="Mention the degree or course you have done or time period of study"
-                          placeholder=" "
-                          {...register(`content.workExp.${index}.jobDesc`, {
-                            maxLength: {
-                              value: 100,
-                              message: "Maximum 100 characters allowed",
-                            },
-                          })}
+                              <input
+                                  type="text"
+                                  id={`id_jobDep${index}`}
+                                
+                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                  
+                                  placeholder=" "
+                                  {...register(`content.workExp.${index}.jobDep`)}
+                                />
+                                <label
+                                  htmlFor={`id_jobDep${index}`}
+                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                >
+                                  Department/Team
+                                </label>
+                              </div>
 
-                          onChange={(e) => {
-                            const jobDescChars = watchLength(e, 100);
-                            document.getElementById(`jobDescCount${index}`).innerText = jobDescChars;
-                          }}
-                        />
-                         <span className="absolute -bottom-5 right-1 text-sm text-gray-400">
-                          <span id={`jobDescCount${index}`}>100</span>/100
-                          </span>
-                          <p className="text-red-500">{errors.content?.workExp?.jobDesc?.message}</p>
-                        <label
-                          htmlFor={`id_jobdesc${index}`}
-                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                        >
-                          Job Description
-                        </label>
-                      </div>
+                        <div className="relative z-0 w-full mb-5 group">
+                            <textarea
+                              type="text"
+                              id={`id_jobdesc${index}`}
+                              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                              // placeholder="Mention the degree or course you have done or time period of study"
+                              placeholder=" "
+                              {...register(`content.workExp.${index}.jobDesc`)}
+
+                              
+                            />
+                            
+                            <label
+                              htmlFor={`id_jobdesc${index}`}
+                              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                              Job Description
+                            </label>
+                        </div>
 
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

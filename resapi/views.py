@@ -18,6 +18,7 @@ from dateutil.parser import parse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
+from bs4 import BeautifulSoup
 
 # Create your views here.
 style = getSampleStyleSheet()
@@ -61,6 +62,13 @@ style.add(ParagraphStyle(name='ContentCal',
                     fontName='Calibri',
                     fontSize=11,
                     leading=14,
+                    bulletIndent=18,
+                    ))
+style.add(ParagraphStyle(name='ContentCenterCal',
+                    fontName='Calibri',
+                    fontSize=11,
+                    leading=14,
+                    alignment=1,
                     ))
 
 style.add(ParagraphStyle(name='SectionTitleCal',
@@ -103,6 +111,7 @@ def columnize(data, interval):
         for j in range(min(interval, len(data) - i)):
             ret.append(data[i + j] + (data[i + j + interval] if i + j + interval < len(data) else []))
     return ret
+
 
 @api_view(['GET', 'POST'])
 def createResume(request):
@@ -345,7 +354,7 @@ def createResume(request):
             if contactNo:
                 contactInfo.append([Paragraph(f"""{contactNo}""", style=style["ContentCal"])])
 
-            contactTable = Table(contactInfo)
+            contactTable = Table(contactInfo, )
             socialInfo = [
                 [Paragraph(f"""<u>github.com/gergelyorosz</u>""", style=style["ContentRightCal"])],
                 [Paragraph(f"""<u>linkedin.com/in/gergelyorosz</u>""", style=style["ContentRightCal"])],
@@ -359,28 +368,54 @@ def createResume(request):
             headerTable.setStyle(TableStyle([
                 ('VALIGN',(0,0),(-1, -1),'MIDDLE')])
             )
-
+            
             aboutMe = Paragraph(f"""{profile_txt}""", style=style["ContentCal"])
+            
 
             #Work Experience
-            edSection = [
+            
+            expSection = [
                 [Paragraph(f"""<b>Work Experience</b>""", style=style["SectionTitleCal"])],
-                []
-                
             ]
 
-            edTable = Table(edSection, spaceBefore=20)
-            edTable.setStyle(TableStyle([
-                ('LINEBELOW',(0,0),(0, 0), 1, colors.HexColor('#1155cc')),
+            for job in workData:
+                jobList = []
+                if job["jobTitle"]:
+                    jobList.append([Paragraph(f"""<b>{job["jobTitle"]}</b><br/>{job["jobDep"]}""", style=style["ContentCal"])])
+                if job["company"]:
+                    jobList.append([Paragraph(f"""<b>{job["company"]}</b><br/>{job["companyLoc"]}""", style=style["ContentCenterCal"])])
+                if job["startDate"] and job["endDate"]:
+                    jobList.append([Paragraph(f"""<b>{datetoString(job["startDate"])} - {datetoString(job["endDate"]) if job["endDate"] != job["endDate"] else job["endDate"]}</b>""", style=style["ContentRightCal"])])
+                jobHeadTable = Table([jobList])
+                jobHeadTable.setStyle(TableStyle([  
+                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                    ('VALIGN',(0,0),(-1, -1),'TOP'),
+                    ])
+                )
+                expSection.append([jobHeadTable])
+                if job["jobDesc"]:
+                    desc = job["jobDesc"].split("\n")
+                    for des in desc:
+                        expSection.append([Paragraph(f"""{des}""", style=style["ContentCal"], bulletText='●', )])
+                    
+
+            
+
+            expTable = Table(expSection, spaceBefore=20)
+            expTable.setStyle(TableStyle([
+                ('LINEBELOW',(0,0),(-1, 0), 1, colors.HexColor('#1155cc')),
                 ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('VALIGN',(0,0),(-1, -1),'TOP'),
             ])
             )
+
+            #Work Experience End
 
 
 
             story.append(headerTable)
             story.append(aboutMe)
-            story.append(edTable)
+            story.append(expTable)
             doc.build(story)
 
             buf.seek(0)

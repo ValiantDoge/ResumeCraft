@@ -334,7 +334,7 @@ def createResume(request):
             address = str(request.POST.get("address"))
             profile_txt = str(request.POST.get("profile"))
             eduData =  json.loads(request.POST.get("education"))
-            skillData =  json.loads(request.POST.get("skills"))
+            skillData =  json.loads(request.POST.get("tech_lang"))
             langData =  json.loads(request.POST.get("languages"))
             workData =  json.loads(request.POST.get("workExp"))
 
@@ -345,7 +345,7 @@ def createResume(request):
             
             story = []
 
-            #Header
+            #Personal Info
             contactInfo = []
             if address:
                 contactInfo.append([Paragraph(f"""{address}""", style=style["ContentCal"])])
@@ -370,7 +370,7 @@ def createResume(request):
             )
             
             aboutMe = Paragraph(f"""{profile_txt}""", style=style["ContentCal"])
-            
+            #Personal Info End
 
             #Work Experience
             
@@ -397,9 +397,7 @@ def createResume(request):
                     desc = job["jobDesc"].split("\n")
                     for des in desc:
                         expSection.append([Paragraph(f"""{des}""", style=style["ContentCal"], bulletText='●', )])
-                    
 
-            
 
             expTable = Table(expSection, spaceBefore=20)
             expTable.setStyle(TableStyle([
@@ -411,11 +409,59 @@ def createResume(request):
 
             #Work Experience End
 
+            #Education Section
+
+            edSection = [
+                [Paragraph(f"""<b>Education and Certifications</b>""", style=style["SectionTitleCal"])],
+            ]
+
+            for edu in eduData:
+                edSection.append([ Paragraph(f"""<b>{edu['degree']}</b>, {edu['uniName']}""", style=style["ContentCal"]), Paragraph(f"""<b>{edu['startEdDate']} - {edu['endEdDate']}</b>""", style=style["ContentRightCal"]) ])
+
+            edTable = Table(edSection, spaceBefore=20, colWidths=[5*inch, 2.5*inch])
+            edTable.setStyle(TableStyle([
+                ('LINEBELOW',(0,0),(-1, 0), 1, colors.HexColor('#1155cc')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('VALIGN',(0,0),(-1, -1),'TOP'),
+            ])
+            )
+
+            #Education Section End
+
+            #Skills Section
+            skillsSection = [
+                [Paragraph(f"""<b>Technologies and Languages</b>""", style=style["SectionTitleCal"])],
+            ]
+
+            for skill in skillData:
+                skillsSection.append([ Paragraph(f"""<b>{skill['skillTitle']}:</b>""", style=style["ContentCal"], bulletText='●'), Paragraph(f"""{skill['skills']}""", style=style["ContentCal"]) ])
+
+            skillTable = Table(skillsSection, spaceBefore=20, colWidths=[2.5*inch, 5*inch])
+            skillTable.setStyle(TableStyle([
+                ('LINEBELOW',(0,0),(-1, 0), 1, colors.HexColor('#1155cc')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('VALIGN',(0,0),(-1, -1),'TOP'),
+            ])
+            )
+
+
+            #Skills Section End  
+
+            #Other Sections
+
+            #Other Sections End
+
+            
+
+            
+
 
 
             story.append(headerTable)
             story.append(aboutMe)
             story.append(expTable)
+            story.append(edTable)
+            story.append(skillTable)
             doc.build(story)
 
             buf.seek(0)

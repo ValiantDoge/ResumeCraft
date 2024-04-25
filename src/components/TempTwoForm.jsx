@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 const steps = [
   { id: "Step 1", name: "Personal Details" },
   { id: "Step 2", name: "Education" },
-  { id: "Step 3", name: "Skills" },
+  { id: "Step 3", name: "Technologies and Languages" },
   { id: "Step 4", name: "Languages"},
   { id: "Step 5", name: "Work Experience" },
 ]
@@ -57,13 +57,13 @@ export default function Form(){
         content: {
           education: [{
             uniName: "",
-            eddesc: "",
+            degree: "",
             startEdDate: "",
             endEdDate: "",
           }],
-          skills: [{
-            skill:"",
-            skillLevel: ""
+          tech_lang: [{
+            skillTitle:"",
+            skills: ""
           }],
           languages: [{lang: ""}],
           workExp: [{
@@ -82,27 +82,14 @@ export default function Form(){
     );
     const { register, control, handleSubmit, formState, setValue } = resumeForm;
 
-    const handlePresentChange = (e, index, field) => {
+    const handlePresentChange = (e, index) => {
       const isChecked = e.target.checked;
       if (isChecked) {
-        if (field === "education") {
-            setValue(`content.education.${index}.endEdDate`, 'Present'); // Set the value of endDate field to 'Present'
-            document.getElementById(`id_edend${index}`).disabled = true; // Disable the endDate field
-        }else{
-            setValue(`content.workExp.${index}.endDate`, 'Present'); // Set the value of endDate field to 'Present'
-            document.getElementById(`id_end${index}`).disabled = true; // Disable the endDate field
-        }
-        
+        setValue(`content.workExp.${index}.endDate`, 'Present'); // Set the value of endDate field to 'Present'
+        document.getElementById(`id_end${index}`).disabled = true; // Disable the endDate field
       } else {
-        if (field === "education") {
-            setValue(`content.education.${index}.endEdDate`, ''); // Clear the value of endDate field
-            document.getElementById(`id_edend${index}`).disabled = false; // Disable the endDate field
-            
-        }else{
-            setValue(`content.workExp.${index}.endDate`, ''); // Clear the value of endDate field
-            document.getElementById(`id_end${index}`).disabled = false; // Disable the endDate field
-        }
-        
+        setValue(`content.workExp.${index}.endDate`, ''); // Clear the value of endDate field
+        document.getElementById(`id_end${index}`).disabled = false; // Disable the endDate field
       }
     };
 
@@ -116,7 +103,7 @@ export default function Form(){
       control
     })
     const { fields: skillFields, append: skillAppend, remove: skillRemove } = useFieldArray({
-      name: 'content.skills',
+      name: 'content.tech_lang',
       control
     })
 
@@ -149,7 +136,7 @@ export default function Form(){
       formField.append("address", data.address);
       formField.append("profile", data.profile);
       formField.append("education", JSON.stringify(data.content.education));
-      formField.append("skills", JSON.stringify(data.content.skills));
+      formField.append("tech_lang", JSON.stringify(data.content.tech_lang));
       formField.append("languages", JSON.stringify(data.content.languages));
       formField.append("workExp", JSON.stringify(data.content.workExp));
       
@@ -426,83 +413,74 @@ export default function Form(){
                         <input
                           type="text"
                           maxLength={100}
-                          id={`id_eddesc${index}`}
+                          id={`id_degree${index}`}
                           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                           // placeholder="Mention the degree or course you have done or time period of study"
                           placeholder=" "
-                          {...register(`content.education.${index}.eddesc`, {
-                            maxLength: {
-                              value: 100,
-                              message: "Maximum 110 characters allowed",
-                            },
-                          })}
+                          {...register(`content.education.${index}.degree`)}
 
-                          onChange={(e) => {
-                            const edDesChars = watchLength(e, 100);
-                            document.getElementById(`edDesCount${index}`).innerText = edDesChars;
-                          }}
                         />
-                         <span className="absolute -bottom-5 right-1 text-sm text-gray-400">
-                          <span id={`edDesCount${index}`}>100</span>/100
-                          </span>
+                         
                           <p className="text-red-500">{errors.content?.education?.eddesc?.message}</p>
                         <label
-                          htmlFor={`id_eddesc${index}`}
+                          htmlFor={`id_degree${index}`}
                           className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                         >
-                          Description
+                          Degree or Course
                         </label>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                           <div className="relative z-0 w-full mb-5 group ">
                                 <input
-                                type="month"
+                                type="number"
+                                maxLength={4}
                                 id={`id_edstart${index}`}
                                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 // placeholder="Univercity/College/School Name"
                                 placeholder=" "
-                                {...register(`content.education.${index}.startEdDate`)}
+                                {...register(`content.education.${index}.startEdDate`, {
+                                  maxLength:{
+                                    value: 4,
+                                    message: "Maximum 4 characters allowed",
+                                  }
+                                })}
                               />
                               <label
-                                htmlFor={`id_start${index}`}
+                                htmlFor={`id_edstart${index}`}
                                 className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                               >
-                                Start Date
+                                Start Year
                               </label>
                           </div>
 
                           <div className="relative z-0 w-full mb-5 group ">
                             <input
-                                  type="month"
+                                  type="number"
+                                  maxLength={4}
                                   id={`id_edend${index}`}
                                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                   // placeholder="Univercity/College/School Name"
                                   placeholder=" "
-                                  {...register(`content.education.${index}.endEdDate`)}
+                                  {...register(`content.education.${index}.endEdDate`,{
+                                    maxLength:{
+                                      value: 4,
+                                      message: "Maximum 4 characters allowed",
+                                    }
+                                  })}
                                 />
                                 <label
-                                  htmlFor={`id_end${index}`}
+                                  htmlFor={`id_edend${index}`}
                                   className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                                 >
-                                  End Date
+                                  End Year
                                 </label>
 
                               
                           </div>
 
                           </div>
-                          <div className="flex w-full justify-end mb-6">
-                          <label
-                                  htmlFor={`id_edpresent${index}`}
-                                  className="peer-focus:font-medium text-sm mr-10"
-                                >
-                                  Present
-                                </label>
-                            <input type="checkbox" id={`id_edpresent${index}`} onChange={(e) => {handlePresentChange(e, index, "education")}} />
-
-                            
-                          </div>
+                          
 
                       {index > 0 && (
                         <button
@@ -549,7 +527,7 @@ export default function Form(){
               initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}>
-                <h2 className="text-2xl font-mono mb-6">Skills</h2>
+                <h2 className="text-2xl font-mono mb-6">Technologies and Languages</h2>
                 <div>
                   {skillFields.map((field, index) => {
                     return (
@@ -558,45 +536,35 @@ export default function Form(){
                         <div className="relative z-0 w-full mb-5 group">
                           <input
                             type="text"
-                            id={`id_skill${index}`}
-                            maxLength={18}
+                            id={`id_skillTitle${index}`}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             // placeholder="Univercity/College/School Name"
                             placeholder=" "
-                            {...register(`content.skills.${index}.skill`, {
-                              maxLength: {
-                              value: 18,
-                              message: "Maximum 18 characters allowed",
-                            },})}
+                            {...register(`content.tech_lang.${index}.skillTitle`)}
                           />
                           <label
-                            htmlFor={`id_skill${index}`}
+                            htmlFor={`id_skillTitle${index}`}
                             className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                           >
-                            Skill
+                            Title (Ex. Languages, Technologies etc.)
                           </label>
                         </div>
   
                         <div className="relative z-0 w-full mb-5 group">
-                          <select
-                            id={`id_skillLevel${index}`}
+                          <input
+                            type="text"
+                            id={`id_skills${index}`}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            {...register(`content.skills.${index}.skillLevel`)}
-                            defaultValue={{
-                              label: "Choose a Skill Level",
-                              value: 0,
-                            }}
-                          >
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advance">Advance</option>
-                          </select>
+                            {...register(`content.tech_lang.${index}.skills`)}
+                           
+                          />
+                           
   
                           <label
-                            htmlFor={`id_skillLevel${index}`}
+                            htmlFor={`id_skills${index}`}
                             className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                           >
-                            Skill Level
+                            Skills List
                           </label>
                         </div>
   

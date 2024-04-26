@@ -335,7 +335,7 @@ def createResume(request):
             profile_txt = str(request.POST.get("profile"))
             eduData =  json.loads(request.POST.get("education"))
             skillData =  json.loads(request.POST.get("tech_lang"))
-            langData =  json.loads(request.POST.get("languages"))
+            others =  json.loads(request.POST.get("others"))
             workData =  json.loads(request.POST.get("workExp"))
 
             buf = io.BytesIO()
@@ -449,6 +449,37 @@ def createResume(request):
 
             #Other Sections
 
+            
+            otherDesc = []
+
+            def cleanHTML(html):
+                soup = BeautifulSoup(html, 'html.parser')
+                for element in soup.find_all(['li', 'span'], style=True):
+                    del element['style']
+
+                for li_element in soup.find_all('li'):
+                    br_tag = soup.new_tag("br")
+                    li_element.insert_after(br_tag)
+                return soup
+            
+            
+
+
+            for other in others:
+                otherDesc.append([Paragraph(f"""<b>{other['title']}</b>""", style=style["SectionTitleCal"])])
+                otherDesc.append([Paragraph(f"""{cleanHTML(other['desc'])}""", style=style["ContentCal"], bulletText='●', )])
+                    
+
+            otherTable = Table(otherDesc, spaceBefore=20)
+            otherTable.setStyle(TableStyle([
+                ('LINEBELOW',(0,0),(-1, 0), 1, colors.HexColor('#1155cc')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('VALIGN',(0,0),(-1, -1),'TOP'),
+            ])
+            )
+            
+
+
             #Other Sections End
 
             
@@ -462,6 +493,7 @@ def createResume(request):
             story.append(expTable)
             story.append(edTable)
             story.append(skillTable)
+            story.append(otherTable)
             doc.build(story)
 
             buf.seek(0)

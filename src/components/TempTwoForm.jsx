@@ -1,18 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, set } from "react-hook-form";
 import { motion } from "framer-motion";
+
+import Tiptap from "./TipTap";
 
 
 // import { useNavigate } from "react-router-dom";
 
 const steps = [
   { id: "Step 1", name: "Personal Details" },
-  { id: "Step 2", name: "Education" },
-  { id: "Step 3", name: "Technologies and Languages" },
-  { id: "Step 4", name: "Languages"},
-  { id: "Step 5", name: "Work Experience" },
+  { id: "Step 2", name: "Work Experience" },
+  { id: "Step 3", name: "Education" },
+  { id: "Step 4", name: "Technologies and Languages"},
+  { id: "Step 5", name: "Other Sections" },
 ]
 
 
@@ -65,7 +67,7 @@ export default function Form(){
             skillTitle:"",
             skills: ""
           }],
-          languages: [{lang: ""}],
+          
           workExp: [{
               jobTitle: "",
               company: "",
@@ -75,6 +77,11 @@ export default function Form(){
               startDate: "",
               endDate: "",
             }],
+
+          others: [{
+            title: "",
+            desc: "",
+          }],
         }
 
         }
@@ -107,8 +114,8 @@ export default function Form(){
       control
     })
 
-    const { fields: langFields, append: langAppend, remove: langRemove } = useFieldArray({
-      name: 'content.languages',
+    const { fields: otherFields, append: otherAppend, remove: otherRemove } = useFieldArray({
+      name: 'content.others',
       control
     })
 
@@ -137,7 +144,7 @@ export default function Form(){
       formField.append("profile", data.profile);
       formField.append("education", JSON.stringify(data.content.education));
       formField.append("tech_lang", JSON.stringify(data.content.tech_lang));
-      formField.append("languages", JSON.stringify(data.content.languages));
+      formField.append("others", JSON.stringify(data.content.others));
       formField.append("workExp", JSON.stringify(data.content.workExp));
       
       
@@ -375,310 +382,8 @@ export default function Form(){
           
 
           <div className="grid grid-cols-1">
+
             {curFormStep === 1 && (
-              <motion.div  id="education-section"
-              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}>
-              <h2 className="text-2xl font-mono mb-6">Add Education (Max. 2)</h2>
-              <div>
-                {edFields.map((field, index) => {
-                  return (
-                    <div className="relative" key={field.id}>
-                      <h2 className="text-lg mb-6">
-                        Education Details {index + 1}
-                      </h2>
-                      <div className="relative z-0 w-full mb-5 group">
-                        <input
-                          type="text"
-                          id={`id_uniName${index}`}
-                          maxLength={50}
-                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                          // placeholder="Univercity/College/School Name"
-                          placeholder=" "
-                          {...register(`content.education.${index}.uniName`, {maxLength: {
-                            value: 50,
-                            message: "Maximum 50 characters allowed",
-                          },})}
-                        />
-                        <label
-                          htmlFor={`id_uniName${index}`}
-                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                        >
-                          Name of Institute
-                        </label>
-                      </div>
-
-                      <div className="relative z-0 w-full mb-5 group">
-                        <input
-                          type="text"
-                          maxLength={100}
-                          id={`id_degree${index}`}
-                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                          // placeholder="Mention the degree or course you have done or time period of study"
-                          placeholder=" "
-                          {...register(`content.education.${index}.degree`)}
-
-                        />
-                         
-                          <p className="text-red-500">{errors.content?.education?.eddesc?.message}</p>
-                        <label
-                          htmlFor={`id_degree${index}`}
-                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                        >
-                          Degree or Course
-                        </label>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <div className="relative z-0 w-full mb-5 group ">
-                                <input
-                                type="number"
-                                maxLength={4}
-                                id={`id_edstart${index}`}
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                // placeholder="Univercity/College/School Name"
-                                placeholder=" "
-                                {...register(`content.education.${index}.startEdDate`, {
-                                  maxLength:{
-                                    value: 4,
-                                    message: "Maximum 4 characters allowed",
-                                  }
-                                })}
-                              />
-                              <label
-                                htmlFor={`id_edstart${index}`}
-                                className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                              >
-                                Start Year
-                              </label>
-                          </div>
-
-                          <div className="relative z-0 w-full mb-5 group ">
-                            <input
-                                  type="number"
-                                  maxLength={4}
-                                  id={`id_edend${index}`}
-                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                  // placeholder="Univercity/College/School Name"
-                                  placeholder=" "
-                                  {...register(`content.education.${index}.endEdDate`,{
-                                    maxLength:{
-                                      value: 4,
-                                      message: "Maximum 4 characters allowed",
-                                    }
-                                  })}
-                                />
-                                <label
-                                  htmlFor={`id_edend${index}`}
-                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                                >
-                                  End Year
-                                </label>
-
-                              
-                          </div>
-
-                          </div>
-                          
-
-                      {index > 0 && (
-                        <button
-                          onClick={() => edRemove(index)}
-                          type="button"
-                          className="absolute rounded-full bg-red-500 top-0 right-0"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6 text-white"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-                <div className="flex w-full space-x-2 justify-end">
-                  <button
-                    onClick={() => edAppend({ uniName: "", eddesc: "" })}
-                    disabled={edFields.length >= 2}
-                    type="button"
-                    className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Add another education
-                  </button>
-                </div>
-              </div>
-              </motion.div >
-            )}
-            
-            
-            {curFormStep === 2 && (
-              <motion.div  id="skill-section"
-              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}>
-                <h2 className="text-2xl font-mono mb-6">Technologies and Languages</h2>
-                <div>
-                  {skillFields.map((field, index) => {
-                    return (
-                      <div className="relative" key={field.id}>
-                        <h2 className="text-lg mb-6">Skillset {index + 1}</h2>
-                        <div className="relative z-0 w-full mb-5 group">
-                          <input
-                            type="text"
-                            id={`id_skillTitle${index}`}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            // placeholder="Univercity/College/School Name"
-                            placeholder=" "
-                            {...register(`content.tech_lang.${index}.skillTitle`)}
-                          />
-                          <label
-                            htmlFor={`id_skillTitle${index}`}
-                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                          >
-                            Title (Ex. Languages, Technologies etc.)
-                          </label>
-                        </div>
-  
-                        <div className="relative z-0 w-full mb-5 group">
-                          <input
-                            type="text"
-                            id={`id_skills${index}`}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            {...register(`content.tech_lang.${index}.skills`)}
-                           
-                          />
-                           
-  
-                          <label
-                            htmlFor={`id_skills${index}`}
-                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                          >
-                            Skills List
-                          </label>
-                        </div>
-  
-                        {index > 0 && (
-                          <button
-                            onClick={() => skillRemove(index)}
-                            type="button"
-                            className="absolute rounded-full bg-red-500 top-0 right-0"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6 text-white"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <div className="flex w-full space-x-2 justify-end">
-                    <button
-                      onClick={() => skillAppend({ skill: "", skillLevel: "" })}
-                      disabled={skillFields.length >= 4}
-                      type="button"
-                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Add Skill
-                    </button>
-                  </div>
-                </div>
-              </motion.div >
-            )}
-            
-            {curFormStep === 3 && (
-                <motion.div  id="lang-section"
-                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}>
-                <h2 className="text-2xl font-mono mb-6">Languages Spoken</h2>
-                <div>
-                  {langFields.map((field, index) => {
-                    return (
-                      <div className="relative" key={field.id}>
-                        <h2 className="text-lg mb-6">Language {index + 1}</h2>
-                        <div className="relative z-0 w-full mb-5 group">
-                          <input
-                            type="text"
-                            id={`id_lang${index}`}
-                            maxLength={18}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            // placeholder="Univercity/College/School Name"
-                            placeholder=" "
-                            {...register(`content.languages.${index}.lang`, {maxLength: {
-                              value: 18,
-                              message: "Maximum 18 characters allowed",
-                            },})}
-                          />
-                          <label
-                            htmlFor={`id_lang${index}`}
-                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                          >
-                            Language
-                          </label>
-                        </div>
-  
-                        {index > 0 && (
-                          <button
-                            onClick={() => langRemove(index)}
-                            type="button"
-                            className="absolute rounded-full bg-red-500 top-0 right-0"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6 text-white"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <div className="flex w-full space-x-2 justify-end">
-                    <button
-                      onClick={() => langAppend({ lang: "" })}
-                      disabled={langFields.length >= 4}
-                      type="button"
-                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Add Language
-                    </button>
-                  </div>
-                </div>
-              </motion.div >
-            )}
-
-            {curFormStep === 4 && (
                 <motion.div  id="wrk-section"
                 initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -878,6 +583,342 @@ export default function Form(){
                   </div>
                 </div>
 
+               
+              </motion.div >
+            )}
+            
+            {curFormStep === 2 && (
+              <motion.div  id="education-section"
+              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}>
+              <h2 className="text-2xl font-mono mb-6">Add Education (Max. 2)</h2>
+              <div>
+                {edFields.map((field, index) => {
+                  return (
+                    <div className="relative" key={field.id}>
+                      <h2 className="text-lg mb-6">
+                        Education Details {index + 1}
+                      </h2>
+                      <div className="relative z-0 w-full mb-5 group">
+                        <input
+                          type="text"
+                          id={`id_uniName${index}`}
+                          maxLength={50}
+                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                          // placeholder="Univercity/College/School Name"
+                          placeholder=" "
+                          {...register(`content.education.${index}.uniName`, {maxLength: {
+                            value: 50,
+                            message: "Maximum 50 characters allowed",
+                          },})}
+                        />
+                        <label
+                          htmlFor={`id_uniName${index}`}
+                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                          Name of Institute
+                        </label>
+                      </div>
+
+                      <div className="relative z-0 w-full mb-5 group">
+                        <input
+                          type="text"
+                          maxLength={100}
+                          id={`id_degree${index}`}
+                          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                          // placeholder="Mention the degree or course you have done or time period of study"
+                          placeholder=" "
+                          {...register(`content.education.${index}.degree`)}
+
+                        />
+                         
+                          <p className="text-red-500">{errors.content?.education?.eddesc?.message}</p>
+                        <label
+                          htmlFor={`id_degree${index}`}
+                          className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                          Degree or Course
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div className="relative z-0 w-full mb-5 group ">
+                                <input
+                                type="number"
+                                maxLength={4}
+                                id={`id_edstart${index}`}
+                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                // placeholder="Univercity/College/School Name"
+                                placeholder=" "
+                                {...register(`content.education.${index}.startEdDate`, {
+                                  maxLength:{
+                                    value: 4,
+                                    message: "Maximum 4 characters allowed",
+                                  }
+                                })}
+                              />
+                              <label
+                                htmlFor={`id_edstart${index}`}
+                                className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                              >
+                                Start Year
+                              </label>
+                          </div>
+
+                          <div className="relative z-0 w-full mb-5 group ">
+                            <input
+                                  type="number"
+                                  maxLength={4}
+                                  id={`id_edend${index}`}
+                                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                  // placeholder="Univercity/College/School Name"
+                                  placeholder=" "
+                                  {...register(`content.education.${index}.endEdDate`,{
+                                    maxLength:{
+                                      value: 4,
+                                      message: "Maximum 4 characters allowed",
+                                    }
+                                  })}
+                                />
+                                <label
+                                  htmlFor={`id_edend${index}`}
+                                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                >
+                                  End Year
+                                </label>
+
+                              
+                          </div>
+
+                          </div>
+                          
+
+                      {index > 0 && (
+                        <button
+                          onClick={() => edRemove(index)}
+                          type="button"
+                          className="absolute rounded-full bg-red-500 top-0 right-0"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-6 h-6 text-white"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <div className="flex w-full space-x-2 justify-end">
+                  <button
+                    onClick={() => edAppend({ uniName: "", eddesc: "" })}
+                    disabled={edFields.length >= 2}
+                    type="button"
+                    className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Add another education
+                  </button>
+                </div>
+              </div>
+              </motion.div >
+            )}
+
+            
+            
+            {curFormStep === 3 && (
+              <motion.div  id="skill-section"
+              initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}>
+                <h2 className="text-2xl font-mono mb-6">Technologies and Languages</h2>
+                <div>
+                  {skillFields.map((field, index) => {
+                    return (
+                      <div className="relative" key={field.id}>
+                        <h2 className="text-lg mb-6">Skillset {index + 1}</h2>
+                        <div className="relative z-0 w-full mb-5 group">
+                          <input
+                            type="text"
+                            id={`id_skillTitle${index}`}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            // placeholder="Univercity/College/School Name"
+                            placeholder=" "
+                            {...register(`content.tech_lang.${index}.skillTitle`)}
+                          />
+                          <label
+                            htmlFor={`id_skillTitle${index}`}
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          >
+                            Title (Ex. Languages, Technologies etc.)
+                          </label>
+                        </div>
+  
+                        <div className="relative z-0 w-full mb-5 group">
+                          <input
+                            type="text"
+                            id={`id_skills${index}`}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            {...register(`content.tech_lang.${index}.skills`)}
+                           
+                          />
+                           
+  
+                          <label
+                            htmlFor={`id_skills${index}`}
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          >
+                            Skills List
+                          </label>
+                        </div>
+  
+                        {index > 0 && (
+                          <button
+                            onClick={() => skillRemove(index)}
+                            type="button"
+                            className="absolute rounded-full bg-red-500 top-0 right-0"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6 text-white"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div className="flex w-full space-x-2 justify-end">
+                    <button
+                      onClick={() => skillAppend({ skill: "", skillLevel: "" })}
+                      disabled={skillFields.length >= 4}
+                      type="button"
+                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Add Skill
+                    </button>
+                  </div>
+                </div>
+              </motion.div >
+            )}
+            
+            {curFormStep === 4 && (
+                <motion.div  id="lang-section"
+                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}>
+                <h2 className="text-2xl font-mono mb-6">Other Sections</h2>
+                <div>
+                  {otherFields.map((field, index) => {
+                    return (
+                      <div className="relative" key={field.id}>
+                        <h2 className="text-lg mb-6">
+                          Other Section {index + 1}
+                        </h2>
+                        <div className="relative z-0 w-full mb-5 group">
+                          <input
+                            type="text"
+                            id={`id_Otitle${index}`}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            // placeholder="Univercity/College/School Name"
+                            placeholder=" "
+                            {...register(`content.others.${index}.title`)}
+                          />
+                          <label
+                            htmlFor={`id_title${index}`}
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          >
+                            Title
+                          </label>
+                        </div>
+
+                        <div className="relative z-0 w-full mb-5 group">
+
+                        <label
+                            htmlFor={`id_Odesc${index}`}
+                            className="font-medium text-sm text-blue-600"
+                          >
+                            Description
+                          </label>
+                          {/* <input
+                            type="text"
+                            id={`id_Odesc${index}`}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            // placeholder="Univercity/College/School Name"
+                            placeholder=" "
+                            {...register(`content.others.${index}.desc`)}
+                          /> */}
+
+                          <Tiptap 
+                          id={`id_Odesc${index}`}
+                          {...register(`content.others.${index}.desc`)}
+                          onChange={(content) => {
+                            console.log(content); // Handle the changed content here
+                            
+                            setValue(`content.others.${index}.desc`, content);
+                          }}
+                          
+                          />
+                          
+                        </div>
+
+
+
+                        {index > 0 && (
+                          <button
+                            onClick={() => otherRemove(index)}
+                            type="button"
+                            className="absolute rounded-full bg-red-500 top-0 right-0"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6 text-white"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div className="flex w-full space-x-2 justify-end">
+                    <button
+                      onClick={() => otherAppend({ lang: "" })}
+                      disabled={otherFields.length >= 4}
+                      type="button"
+                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Add another Section
+                    </button>
+                  </div>
+                </div>
+
                 <button
                   // onClick={(e)=>sendData(e)}
                   type="submit"
@@ -888,7 +929,11 @@ export default function Form(){
               </motion.div >
             )}
 
+            
+
             {curFormStep === 5 && pdfData && (
+
+              
               
                 <motion.div  
                 id="wrk-section"
@@ -900,6 +945,9 @@ export default function Form(){
                     <a href={pdfData} download="resume.pdf" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
                       Download Resume
                     </a>
+
+
+                    
                               
                               
                 </motion.div>

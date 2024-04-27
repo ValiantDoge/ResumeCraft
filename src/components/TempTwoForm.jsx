@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
-import { useForm, useFieldArray, set } from "react-hook-form";
+import { Controller,useForm, useFieldArray } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import Tiptap from "./TipTap";
@@ -80,14 +80,14 @@ export default function Form(){
 
           others: [{
             title: "",
-            desc: "",
+            desc: "heklo",
           }],
         }
 
         }
       },
     );
-    const { register, control, handleSubmit, formState, setValue } = resumeForm;
+    const { register, control, handleSubmit, formState, setValue, getValues } = resumeForm;
 
     const handlePresentChange = (e, index) => {
       const isChecked = e.target.checked;
@@ -867,15 +867,18 @@ export default function Form(){
                             {...register(`content.others.${index}.desc`)}
                           /> */}
 
-                          <Tiptap 
-                          id={`id_Odesc${index}`}
-                          {...register(`content.others.${index}.desc`)}
-                          onChange={(content) => {
-                            console.log(content); // Handle the changed content here
-                            
-                            setValue(`content.others.${index}.desc`, content);
-                          }}
                           
+
+                          <Controller
+                              control={control}
+                              render={({field}) => (
+                                <Tiptap 
+                                  value={field.value} 
+                                  onChange={field.onChange}
+                                />
+                              )}
+                              name="desc"
+                              defaultValue="" 
                           />
                           
                         </div>

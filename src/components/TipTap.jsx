@@ -5,7 +5,7 @@ import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
 import React from 'react'
 import MenuBar from './Menubar'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 //toolbar
 
@@ -26,43 +26,28 @@ const extensions = [
   }),
 ]
 
-const content = ''
+// const content = ''
 
-const Tiptap = ({ onChange }) => {
+function Tiptap({ value,onChange= () => {}}) {
+  // const [content, setContent] = useState(value)
   const editor = useEditor({
     extensions: extensions,
-    content,
+    content: value,
     editorProps:{
         attributes: {
             class: 'prose max-w-4xl rounded-b-lg border border-t-0 border-gray-500 min-h-[250px] p-3',
         },
     }, 
     
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
+      // setContent(editor.getHTML())
+      // console.log(value)
+    },
+    
+
+    
   })
-
-  useEffect(() => {
-
-    if (!editor) {
-      console.error("Editor is null. Waiting for initialization...");
-      return;
-    }
-  
-    console.log("Adding event listener...");
-    const subscription = editor.on('update', ({ editor }) => {
-      onChange(editor.getHTML());
-    });
-  
-    console.log("Subscription:", subscription);
-  
-    return () => {
-      console.log("Removing event listener...");
-      if (typeof subscription === 'function') {
-        subscription();
-      } else {
-        console.warn("Subscription is not a function:", subscription);
-      }
-    };
-  }, [editor, onChange]);
 
   return (
     <>

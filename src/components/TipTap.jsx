@@ -5,13 +5,14 @@ import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
 import React from 'react'
 import MenuBar from './Menubar'
-import { useState, useEffect } from 'react'
+import Underline from '@tiptap/extension-underline'
 
 //toolbar
 
 
 // define your extension array
 const extensions = [
+  Underline,
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
   TextStyle.configure({ types: [ListItem.name] }),
   StarterKit.configure({

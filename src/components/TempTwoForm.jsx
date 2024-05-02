@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
-import { Controller,useForm, useFieldArray } from "react-hook-form";
+import { Controller,useForm, useFieldArray, set } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import Tiptap from "./TipTap";
@@ -80,7 +80,7 @@ export default function Form(){
 
           others: [{
             title: "",
-            desc: "heklo",
+            desc: "",
           }],
         }
 
@@ -230,7 +230,7 @@ export default function Form(){
 
             
         <form
-          className="shadow-md p-6 px-14 rounded-md"
+          className="shadow-md p-6 md:px-14 rounded-md"
           onSubmit={handleSubmit(sendData)}
           noValidate
         >
@@ -873,11 +873,19 @@ export default function Form(){
                               control={control}
                               render={({field}) => (
                                 <Tiptap 
-                                  value={field.value} 
-                                  onChange={field.onChange}
+                                  value={getValues(`content.others.${index}.desc`)}
+                                  onChange={
+                                    
+                                      (value) => {
+                                        setValue(`content.others.${index}.desc`, value);
+                                        field.onChange(value);
+                                      }
+                                    
+                                  }
                                 />
                               )}
                               name="desc"
+                              id={`id_Odesc${index}`}
                               defaultValue="" 
                           />
                           

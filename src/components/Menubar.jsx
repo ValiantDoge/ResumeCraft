@@ -1,4 +1,5 @@
-import { Bold,Italic,List,ListOrdered,Undo,Redo } from 'lucide-react';
+import { Bold,Italic,List,ListOrdered,Undo,Redo, Underline } from 'lucide-react';
+
 
 function MenuBar({ editor }){
     // const { editor } = useCurrentEditor()
@@ -37,9 +38,29 @@ function MenuBar({ editor }){
         >
           <Italic />
         </button>
+
+        <button
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        disabled={
+          !editor.can()
+            .chain()
+            .focus()
+            .toggleItalic()
+            .run()
+        }
+        className={editor.isActive('underline') ? 'rounded-lg border-2 text-white bg-black p-2 m-2' : 'rounded-lg border-2 border-black p-1 m-2'}
+      >
+        <Underline />
+      </button>
         
        
-        
+      <input
+        type="color"
+        onInput={event => editor.chain().focus().setColor(event.target.value).run()}
+        value={editor.getAttributes('textStyle').color}
+        data-testid="setColor"
+        className='rounded-lg border-2 border-black h-9'
+      />
         
         
         <button

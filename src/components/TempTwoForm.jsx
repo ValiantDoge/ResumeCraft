@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
-import { Controller,useForm, useFieldArray, set } from "react-hook-form";
+import { Controller,useForm, useFieldArray } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import Tiptap from "./TipTap";
@@ -182,7 +182,7 @@ export default function Form(){
           className="flex justify-center items-center  mx-auto flex-wrap"
         >
           {steps.map((step, index) => (
-            <button onClick={() => setCurFormstep(index)}>
+            <button onClick={() => setCurFormstep(index)} key={step.name}>
               {curFormStep === index ? (
                 <a
                   key={step.name}
@@ -920,7 +920,7 @@ export default function Form(){
                   })}
                   <div className="flex w-full space-x-2 justify-end">
                     <button
-                      onClick={() => otherAppend({ lang: "" })}
+                      onClick={() => otherAppend({ title: "", desc: ""})}
                       disabled={otherFields.length >= 4}
                       type="button"
                       className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"

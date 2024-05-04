@@ -454,13 +454,15 @@ def createResume(request):
                     jobList.append([Paragraph(f"""<b>{job["company"]}</b><br/>{job["companyLoc"]}""", style=style["ContentCenterCal"])])
                 if job["startDate"] and job["endDate"]:
                     jobList.append([Paragraph(f"""<b>{datetoString(job["startDate"])} - {datetoString(job["endDate"]) if job["endDate"] != job["endDate"] else job["endDate"]}</b>""", style=style["ContentRightCal"])])
-                jobHeadTable = Table([jobList])
-                jobHeadTable.setStyle(TableStyle([  
-                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                    ('VALIGN',(0,0),(-1, -1),'TOP'),
-                    ])
-                )
-                expSection.append([jobHeadTable])
+                
+                if len(jobList) > 0:
+                    jobHeadTable = Table([jobList])
+                    jobHeadTable.setStyle(TableStyle([  
+                        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                        ('VALIGN',(0,0),(-1, -1),'TOP'),
+                        ])
+                    )
+                    expSection.append([jobHeadTable])
                 if job["jobDesc"]:
                     desc = job["jobDesc"].split("\n")
                     for des in desc:
@@ -484,7 +486,8 @@ def createResume(request):
             ]
 
             for edu in eduData:
-                edSection.append([ Paragraph(f"""<b>{edu['degree']}</b>, {edu['uniName']}""", style=style["ContentCal"]), Paragraph(f"""<b>{edu['startEdDate']} - {edu['endEdDate']}</b>""", style=style["ContentRightCal"]) ])
+                if edu['degree'] or edu['uniName'] or edu['startEdDate'] or edu['endEdDate']:
+                    edSection.append([ Paragraph(f"""<b>{edu['degree']}</b>, {edu['uniName']}""", style=style["ContentCal"]), Paragraph(f"""<b>{edu['startEdDate']} - {edu['endEdDate']}</b>""", style=style["ContentRightCal"]) ])
 
             edTable = Table(edSection, spaceBefore=20, colWidths=[5*inch, 2.5*inch])
             edTable.setStyle(TableStyle([
@@ -502,7 +505,8 @@ def createResume(request):
             ]
 
             for skill in skillData:
-                skillsSection.append([ Paragraph(f"""<b>{skill['skillTitle']}:</b>""", style=style["ContentCal"], bulletText='●'), Paragraph(f"""{skill['skills']}""", style=style["ContentCal"]) ])
+                if skill['skillTitle'] or skill['skills']:
+                    skillsSection.append([ Paragraph(f"""<b>{skill['skillTitle']}:</b>""", style=style["ContentCal"], bulletText='●'), Paragraph(f"""{skill['skills']}""", style=style["ContentCal"]) ])
 
             skillTable = Table(skillsSection, spaceBefore=20, colWidths=[2.5*inch, 5*inch])
             skillTable.setStyle(TableStyle([
@@ -521,13 +525,14 @@ def createResume(request):
             otherDesc = []
             for other in others:
                 otherDesc.append([Paragraph(f"""<b>{other['title']}</b>""", style=style["SectionTitleCal"])])
-                
+
+                descText = []
                 text = cleanHTML(other['desc'], font_name="Helvetica-BoldOblique")
                 paragraphs = toRParagraph(text)
-                
-
                 for paragraph in paragraphs:
-                    otherDesc.append([paragraph])
+                    descText.append([paragraph])
+                descTable = Table(descText)
+                otherDesc.append([descTable])
 
 
             otherTable = Table(otherDesc, spaceBefore=20)

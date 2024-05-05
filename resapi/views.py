@@ -335,6 +335,7 @@ def createResume(request):
             contactNo = str(request.POST.get("contactNo") )
             address = str(request.POST.get("address"))
             profile_txt = str(request.POST.get("profile"))
+            socials = json.loads(request.POST.get("socials"))
             eduData =  json.loads(request.POST.get("education"))
             skillData =  json.loads(request.POST.get("tech_lang"))
             others =  json.loads(request.POST.get("others"))
@@ -357,12 +358,18 @@ def createResume(request):
                 contactInfo.append([Paragraph(f"""{contactNo}""", style=style["ContentCal"])])
 
             contactTable = Table(contactInfo, )
-            socialInfo = [
-                [Paragraph(f"""<u>github.com/gergelyorosz</u>""", style=style["ContentRightCal"])],
-                [Paragraph(f"""<u>linkedin.com/in/gergelyorosz</u>""", style=style["ContentRightCal"])],
-                # [Paragraph(f"""<u>instagram.com/gergelyorosz</u>""", style=style["ContentRightCal"])],
-            ]
+
+            
+            
+
+            socialInfo = []
+
+            if socials:
+                for social in socials:
+                    socialInfo.append([Paragraph(f"""<u>{social['link']}</u>""", style=style["ContentRightCal"])])
             socialTable = Table(socialInfo, hAlign='RIGHT')
+
+
             header = [
                 [contactTable, Paragraph(f"""{fname} {lname}""", style=style["NameTitleCal"]), socialTable],
             ]

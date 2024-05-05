@@ -5,6 +5,7 @@ import { Controller,useForm, useFieldArray } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import Tiptap from "./TipTap";
+import { Link, Github, Linkedin, Instagram, Globe } from 'lucide-react';
 
 
 // import { useNavigate } from "react-router-dom";
@@ -41,6 +42,7 @@ export default function Form(){
       }
     }
 
+
     
   
     const resumeForm = useForm({
@@ -54,6 +56,10 @@ export default function Form(){
         address: "",
         profile: "",
         profession: "",
+
+        socials: [{
+          link: "",
+        }],
 
         
         content: {
@@ -105,6 +111,11 @@ export default function Form(){
     }
 
     const { errors } = formState;
+    const {fields: socialFields, append: socialAppend, remove: socialRemove} = useFieldArray({
+      name: 'socials',
+      control
+    })
+
     const { fields: edFields, append: edAppend, remove: edRemove } = useFieldArray({
       name: 'content.education',
       control
@@ -142,6 +153,7 @@ export default function Form(){
       formField.append("contactNo", data.phoneNo);
       formField.append("address", data.address);
       formField.append("profile", data.profile);
+      formField.append("socials", JSON.stringify(data.socials));
       formField.append("education", JSON.stringify(data.content.education));
       formField.append("tech_lang", JSON.stringify(data.content.tech_lang));
       formField.append("others", JSON.stringify(data.content.others));
@@ -375,6 +387,75 @@ export default function Form(){
                     About you
                   </label>
                 </div>
+
+
+
+
+                {/* Socials */}
+
+                <h2 className="text-2xl font-mono mb-6">Social Accounts</h2>
+                <div>
+                  {socialFields.map((field, index) => {
+                    return (
+                      <div className="relative" key={field.id}>
+                        <div className="relative z-0 w-full mb-5 group">
+                        <div class="absolute inset-y-0 start-0 flex items-center px-3.5 mb-1 pointer-events-none" id={`id_socialIcon${index}`}>
+                         <Link/>
+                        </div>
+                          <input
+                            type="url"
+                            id={`id_socialLink${index}`}
+                            className="ps-10 block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            // placeholder="Univercity/College/School Name"
+                            placeholder=" "
+                            {...register(`socials.${index}.link`)}
+                            
+                          />
+                          <label
+                            htmlFor={`id_socialLink${index}`}
+                            className="ps-12 peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          >
+                            Social Link <span className="font-xs">(Github, Linkedin etc.)</span>
+                          </label>
+                        </div>
+  
+                        {index > 0 && (
+                          <button
+                            onClick={() => socialRemove(index)}
+                            type="button"
+                            className="absolute rounded-full bg-red-500 top-0 right-0"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6 text-white"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div className="flex w-full space-x-2 justify-end">
+                    <button
+                      onClick={() => socialAppend({ link: "" })}
+                      type="button"
+                      className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Add Social Account
+                    </button>
+                  </div>
+                </div>
+
+                {/* Socials End */}
                 </motion.div >
           )}
           
@@ -576,7 +657,7 @@ export default function Form(){
                       onClick={() => wrkAppend({ jobTitle: "", company: "", jobDesc: "", startDate: "", endDate: "" })}
                       type="button"
                       className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={wrkFields.length >= 2}
+                      
                     >
                       Add Work Experience
                     </button>
@@ -722,7 +803,6 @@ export default function Form(){
                 <div className="flex w-full space-x-2 justify-end">
                   <button
                     onClick={() => edAppend({ uniName: "", eddesc: "" })}
-                    disabled={edFields.length >= 2}
                     type="button"
                     className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
                   >
@@ -809,7 +889,6 @@ export default function Form(){
                   <div className="flex w-full space-x-2 justify-end">
                     <button
                       onClick={() => skillAppend({ skill: "", skillLevel: "" })}
-                      disabled={skillFields.length >= 4}
                       type="button"
                       className="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
                     >

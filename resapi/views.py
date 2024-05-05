@@ -7,7 +7,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import A4, letter
 from reportlab.lib import colors
 from reportlab.graphics.shapes import *
-from PIL import Image as PImage
+# from PIL import Image as PImage
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm,inch
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Frame
@@ -18,7 +18,7 @@ from dateutil.parser import parse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
-from bs4 import BeautifulSoup
+from html2rl.rlconversions import cleanHTML, toRParagraph
 
 # Create your views here.
 style = getSampleStyleSheet()
@@ -112,73 +112,7 @@ def columnize(data, interval):
             ret.append(data[i + j] + (data[i + j + interval] if i + j + interval < len(data) else []))
     return ret
 
-def cleanHTML(rich_text, font_name):
-    soup = BeautifulSoup(rich_text, 'html.parser')
-    # print(soup)
 
-    for pTag in soup.find_all('p'):
-        if pTag.parent.name == 'li':
-            pTag.unwrap()
-
-    for spanTag in soup.find_all('span'):
-        spanTag.name = 'font'
-        style_value = spanTag['style']
-        if style_value:
-            color = style_value.split('color:')[-1].strip()
-            spanTag['color'] = color
-            del spanTag['style']
-
-    for ul_ol in soup.find_all(['ul', 'ol']):
-        ul_ol.wrap(soup.new_tag("p"))
-        
-    for p_el in soup.find_all('p'):
-        p_el.name = 'para'
-
-        for strong_tags in p_el.find_all('strong'):
-            strong_tags.name = 'b'
-        for em_tags in p_el.find_all('em'):
-            em_tags.name = 'i'
-
-        bold_italic_tags = soup.find_all('b')
-        if bold_italic_tags:
-            for tag in bold_italic_tags:
-                italic_tags_inside_bold = tag.find_all('i')
-                for italic_tag in italic_tags_inside_bold:
-                    # Replace <b><i> tags with appropriate font tag
-                    italic_tag.name = 'font'
-                    italic_tag['name'] = font_name  # Specify the bold italic font
-
-                    # Remove the <b> tag
-                    tag.unwrap()
-        
-        
-        p_el.insert_after(soup.new_tag("br"))
-    # print("+++++++")
-    # print(soup)
-    
-    return str(soup)
-            
-def toRParagraph(rich_text):
-    para_list = rich_text.split('<br/>')
-    list_of_para = []
-    for para in para_list:
-        paraSoupObj = BeautifulSoup(para, 'html.parser')
-        liTags = paraSoupObj.find_all('li')
-        if liTags:
-            bullet_count = 1
-            for li in liTags:
-                if li.parent.name == 'ul':
-                    para_obj = Paragraph(f"""{li}""", style=style["ContentCal"], bulletText='●')
-                    list_of_para.append([para_obj])
-                elif li.parent.name == 'ol':
-                    para_obj = Paragraph(f"""{li}""", style=style["ContentCal"], bulletText=str(bullet_count))
-                    list_of_para.append([para_obj])
-                    bullet_count += 1
-        else:
-            para_obj = Paragraph(f"""{para}""", style=style["ContentCal"])
-            list_of_para.append([para_obj])
-
-    return list_of_para
 
 
 @api_view(['GET', 'POST'])
@@ -525,10 +459,11 @@ def createResume(request):
             otherDesc = []
             for other in others:
                 otherDesc.append([Paragraph(f"""<b>{other['title']}</b>""", style=style["SectionTitleCal"])])
+                print(type(other['desc']))
 
                 descText = []
-                text = cleanHTML(other['desc'], font_name="Helvetica-BoldOblique")
-                paragraphs = toRParagraph(text)
+                text = cleanHTML(other['desc'], boldItalic_fontName="Helvetica-BoldOblique")
+                paragraphs = toRParagraph(text, normal_style=style["ContentCal"])
                 for paragraph in paragraphs:
                     descText.append([paragraph])
                 descTable = Table(descText)
@@ -536,12 +471,20 @@ def createResume(request):
 
 
             otherTable = Table(otherDesc, spaceBefore=20)
-            otherTable.setStyle(TableStyle([
-                ('LINEBELOW',(0,0),(-1, 0), 1, colors.HexColor('#1155cc')),
+
+            otherTableStyle = [
                 ('LEFTPADDING', (0, 0), (-1, -1), 0),
                 ('VALIGN',(0,0),(-1, -1),'TOP'),
-            ])
-            )
+            ]
+            
+
+            for i, row in enumerate(otherDesc):
+                for item in row:
+                    if type(item) == Paragraph:
+                        if item.style == style["SectionTitleCal"]:
+                            otherTableStyle.append(('LINEBELOW',(0,i),(-1, i), 1, colors.HexColor('#1155cc')))
+
+            otherTable.setStyle(TableStyle(otherTableStyle))
 
             
             
